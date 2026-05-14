@@ -12,6 +12,7 @@ from discretize.utils import mkvc, active_from_xyz
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+from matplotlib.colors import LogNorm
 
 
 # ======================================
@@ -19,13 +20,13 @@ import matplotlib.pyplot as plt
 # ======================================
 
 # receiver locations
-x_positions = [
-    -5000, -2000, -1500, -1000, -750, -500, -400, -300, -250, -200,
-    -150, -125, -100, -90, -80, -70, -60, -50, -40, -30,
-    -20, -10, 0, 10, 20, 30, 40, 50, 60, 70,
-    80, 90, 100, 125, 150, 200, 250, 300, 400, 500,
-    750, 1000, 1500, 2000, 5000
-]
+# x_positions = [
+#     -5000, -2000, -1500, -1000, -750, -500, -400, -300, -250, -200,
+#     -150, -125, -100, -90, -80, -70, -60, -50, -40, -30,
+#     -20, -10, 0, 10, 20, 30, 40, 50, 60, 70,
+#     80, 90, 100, 125, 150, 200, 250, 300, 400, 500,
+#     750, 1000, 1500, 2000, 5000
+# ]
 y_positions = [
     -5000, -2000, -1500, -1000, -750, -500, -400, -300, -250, -200,
     -150, -125, -100, -90, -80, -70, -60, -50, -40, -30,
@@ -33,6 +34,7 @@ y_positions = [
     80, 90, 100, 125, 150, 200, 250, 300, 400, 500,
     750, 1000, 1500, 2000, 5000
 ]
+x_positions = [0] # debug line
 
 rx_locs = []
 
@@ -64,7 +66,7 @@ nbcz = 2 ** int(np.round(np.log(dom_width_z / dh) / np.log(2.0)))
 hx = [(dh, nbcx)]
 hy = [(dh, nbcy)]
 hz = [(dh, nbcz)]
-mesh = TreeMesh([hx, hy, hz], x0="CCN", diagonal_balance=True)
+mesh = TreeMesh([hx, hy, hz], x0="CCC", diagonal_balance=True)
 
 # Coarse refinement over the whole domain first
 mesh.refine_box(
@@ -105,12 +107,23 @@ print(f"Mesh z extent: {mesh.nodes_z[[0,-1]]/1000} km")
 
 background_conductivity = 0.001
 sphere_conductivity = 10
+sigma_air = 1e-8
 
-background_model = background_conductivity * np.ones(mesh.nC)
+conductivity_model = sigma_air * np.ones(mesh.nC)
 
-sphere_indices = model_builder.get_indices_sphere(center=[0,0,-1000], radius=500, cell_centers=mesh.cell_centers)
-conductivity_model = background_conductivity * np.ones(mesh.nC)
+earth_inds = mesh.cell_centers[:,2] < 0
+conductivity_model[earth_inds] = background_conductivity
+
+sphere_indices = model_builder.get_indices_sphere(
+    center=[0,0,-1000],
+    radius=500,
+    cell_centers=mesh.cell_centers
+)
+
 conductivity_model[sphere_indices] = sphere_conductivity
+
+background_model = sigma_air * np.ones(mesh.nC)
+background_model[earth_inds] = background_conductivity
 
 # CHECKPOINT
 fig = plt.figure(figsize=(10, 4.5))
@@ -121,7 +134,10 @@ out = mesh.plot_slice(
     normal="Y",
     ind=int(len(mesh.h[1]) / 2),
     grid=True,
-    pcolor_opts={"cmap": "viridis"}
+    pcolor_opts={
+        "cmap": "viridis",
+        "norm": LogNorm(vmin=1e-8, vmax=10)
+    }
 )
 
 cb = plt.colorbar(out[0], ax=ax1, orientation='vertical')
@@ -147,13 +163,12 @@ freqs = np.logspace(low_freq_order,
 # Data structued as freq x dataType x rx
 source_list = []
 
-rx_list = []
-rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='xy', component='apparent_resistivity'))
-rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='xy', component='phase'))
-rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='yx', component='apparent_resistivity'))
-rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='yx', component='phase'))
-
 for f in freqs:
+    rx_list = []
+    rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='xy', component='apparent_resistivity'))
+    rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='xy', component='phase'))
+    rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='yx', component='apparent_resistivity'))
+    rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='yx', component='phase'))
     source_list.append(nsem.sources.PlanewaveXYPrimary(rx_list, frequency=f, sigma_primary=background_model))
 
 survey = nsem.survey.Survey(source_list)

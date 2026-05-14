@@ -13,6 +13,7 @@ print(freqs.shape)
 print(rx_locs.shape)
 
 data = dpred.reshape(len(freqs), 4, rx_locs.shape[0])
+data[:, 1, :] += 180 # app resistivity quadrant correction
 rho_xy = data[:, 0, :]
 phase_xy = data[:, 1, :]
 rho_yx = data[:, 2, :]
@@ -21,12 +22,12 @@ phase_yx = data[:, 3, :]
 fig, axes = plt.subplots(2, 2, figsize=(10, 7), sharex=True)
 axes = axes.flatten()
 
-x_cut = rx_locs[990:1035, 1]
+x_cut = rx_locs[:, 1]
 freq_idx = 30
 labels = ['AppRes xy', 'Phase xy', 'App Res yx', 'Phase yx']
 
 for i, (ax, label) in enumerate(zip(axes, labels)):
-    ax.plot(x_cut, data[freq_idx, i, 990:1035], 'o-')
+    ax.plot(x_cut, data[freq_idx, i, :], 'o-')
     ax.set_title(label)
     ax.set_xlabel('Easting (m)')
     if i % 2 == 0:
