@@ -34,13 +34,13 @@ phase_yx = data[:, 3, :]
 fig, axes = plt.subplots(2, 2, figsize=(10, 7), sharex=True)
 axes = axes.flatten()
 
-x_cut = rx_locs[:, 1]
-freq_idx = 30
+x_cut = rx_locs[0:35, 1]
+freq_idx = 0
 labels = ['App Res xy', 'Phase xy', 'App Res yx', 'Phase yx']
 
 for i, (ax, label) in enumerate(zip(axes, labels)):
-    ax.plot(x_cut, data[freq_idx, i, :], '.-', label="Simulated")
-    ax.plot(x_cut, Adata[:, i], '.-', label="Analytic")
+    ax.plot(x_cut, data[freq_idx, i, 0:35], '.-', label="Simulated")
+    ax.plot(x_cut, Adata[5:40, i], '.-', label="Analytic")
     ax.set_title(label)
     ax.set_xlabel('Easting (m)')
     if i % 2 == 0:
