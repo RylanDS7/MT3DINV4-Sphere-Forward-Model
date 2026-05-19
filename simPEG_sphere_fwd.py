@@ -14,6 +14,8 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 
+import time
+
 
 # ======================================
 # Define receiver locations
@@ -192,10 +194,14 @@ sim = nsem.Simulation3DPrimarySecondary(
 # ======================================
 
 print("Running Forward Simulation")
+start_time = time.time()
 dpred = sim.dpred(conductivity_model)
-print("Expected data shape:", len(freqs) * len(rx_locs) * 4)
+end_time = time.time()
+sim_time = end_time - start_time
+print(f"Finished Forward Simulation in {sim_time:.4f} seconds")
+print(f"Expected data shape: {len(freqs)} x {len(rx_locs)} x 4 = {len(freqs) * len(rx_locs) * 4}")
 print("Survey data shape:", dpred.shape)
 
-np.save('dpred.npy', dpred)
-np.save('freqs.npy', freqs)
-np.save('rx_locs.npy', rx_locs)
+np.save('simPEG_data/dpred.npy', dpred)
+np.save('simPEG_data/freqs.npy', freqs)
+np.save('simPEG_data/rx_locs.npy', rx_locs)
