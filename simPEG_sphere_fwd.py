@@ -1,7 +1,7 @@
 # Code by Rylan Stutters - github.com/RylanDS7
 
 # SimPEG functionality
-from simpeg import maps, utils, data, optimization, maps, regularization, directives
+from simpeg import maps, utils, optimization, maps, regularization, directives
 from simpeg.electromagnetics import natural_source as nsem
 from simpeg.utils import model_builder
 from pymatsolver import Pardiso
@@ -89,8 +89,8 @@ mesh.refine_box(
 
 # Fine refinement around the sphere
 mesh.refine_box(
-    [-500,-500,-1500],
-    [500,500,0],
+    [-1000,-1000,-2000],
+    [1000,1000,0],
     levels=-2,
     finalize=False
 )
@@ -168,10 +168,13 @@ freqs = np.logspace(low_freq_order,
                     high_freq_order, 
                     samples_per_dec*(high_freq_order-low_freq_order)+1)
 
+# reduced frequency list
+freqs_red = np.array([0.001, 0.01, 0.1, 1, 10, 100, 1000])
+
 # Data structued as freq x dataType x rx
 source_list = []
 
-for f in freqs:
+for f in freqs_red: # running on reduced freqs
     rx_list = []
     rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='xy', component='apparent_resistivity'))
     rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='xy', component='phase'))
@@ -206,9 +209,18 @@ dpred = sim.dpred(conductivity_model)
 end_time = time.time()
 sim_time = end_time - start_time
 print(f"Finished Forward Simulation in {sim_time:.4f} seconds")
-print(f"Expected data shape: {len(freqs)} x {len(rx_locs)} x 4 = {len(freqs) * len(rx_locs) * 4}")
+print(f"Expected data shape: {len(freqs_red)} x {len(rx_locs)} x 4 = {len(freqs_red) * len(rx_locs) * 4}") # for reduced freqs
 print("Survey data shape:", dpred.shape)
 
-np.save('simPEG_data/dpred.npy', dpred)
+data = np.zeros([len(freqs), 4, rx_locs.shape[0]])
+
+# processing reduced freqs
+data_red = dpred.reshape(len(freqs_red), 4, rx_locs.shape[0]) 
+for i, f in enumerate(freqs):
+    if f in freqs_red:
+        red_ind = np.where(freqs_red == f)[0][0] 
+        data[i, :, :] = data_red[red_ind, :, :]
+
+np.save('simPEG_data/dpred.npy', data)
 np.save('simPEG_data/freqs.npy', freqs)
 np.save('simPEG_data/rx_locs.npy', rx_locs)

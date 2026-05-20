@@ -9,7 +9,7 @@ analytic_path = "analytic_data/"
 
 # load and parse analytic data
 Adata = np.zeros([71, 45, 4]) # not holding Z data right now
-for f_ind in np.linspace(0,70,71, dtype=int):
+for f_ind in np.arange(71):
     try:
         appresA = np.load(analytic_path+'appres'+str(f_ind)+'.npy')
         impA = np.load(analytic_path+'imp'+str(f_ind)+'.npy')
@@ -38,11 +38,11 @@ fig, axes = plt.subplots(2, 2, figsize=(10, 7), sharex=True)
 axes = axes.flatten()
 
 x_cut = rx_locs[0:45, 0]
-freq_idx = 20
 labels = ['App Res xy', 'Phase xy', 'App Res yx', 'Phase yx']
 
 for i, (ax, label) in enumerate(zip(axes, labels)):
-    ax.plot(x_cut, data[freq_idx, i, :], '.-', label=f"Simulated {freqs[freq_idx]}Hz")
+    ax.plot(x_cut, data[20, i, :], '.-', label=f"Simulated {freqs[20]}Hz")
+    ax.plot(x_cut, data[30, i, :], '.-', label=f"Simulated {freqs[30]}Hz")
     ax.plot(x_cut, Adata[20, :, i], '.-', label=f"Analytic {freqs[20]}Hz")
     ax.plot(x_cut, Adata[30, :, i], '.-', label=f"Analytic {freqs[30]}Hz")
     ax.set_title(label)
