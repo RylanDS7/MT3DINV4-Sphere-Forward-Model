@@ -30,14 +30,14 @@ import time
 #     80, 90, 100, 125, 150, 200, 250, 300, 400, 500,
 #     750, 1000, 1500, 2000, 5000
 # ]
-y_positions = [
+x_positions = [
     -5000, -2000, -1500, -1000, -750, -500, -400, -300, -250, -200,
     -150, -125, -100, -90, -80, -70, -60, -50, -40, -30,
     -20, -10, 0, 10, 20, 30, 40, 50, 60, 70,
     80, 90, 100, 125, 150, 200, 250, 300, 400, 500,
     750, 1000, 1500, 2000, 5000
 ]
-x_positions = [0] # debug line
+y_positions = [0] # debug line
 
 rx_locs = []
 
@@ -55,7 +55,7 @@ plt.show()
 # SETUP MESH
 # ======================================
 
-dh = 50  # fine cell size
+dh = 50 # fine cell size
 
 # Skin depth at 0.001 Hz ~ 500 km, use 5x = 2500 km
 dom_width_x = 500000.0  # 500 km
@@ -87,14 +87,19 @@ mesh.refine_box(
     finalize=False
 )
 
+# Fine refinement around the sphere
+mesh.refine_box(
+    [-500,-500,-1500],
+    [500,500,0],
+    levels=-2,
+    finalize=False
+)
+
 # Fine refinement near receivers
 refine_pts = np.zeros((len(rx_locs), 3))
 for i, pt in enumerate(rx_locs):
     refine_pts[i] = [pt[0], pt[1], 0]
 mesh.refine_points(refine_pts, padding_cells_by_level=[2, 1], finalize=False)
-
-# Fine refinement around sphere
-mesh.refine_points([[0, 0, -1000]], padding_cells_by_level=[4, 3, 2, 1], finalize=False)
 
 mesh.finalize()
 
