@@ -34,26 +34,29 @@ phase_xy = data[:, 1, :]
 rho_yx = data[:, 2, :]
 phase_yx = data[:, 3, :]
 
-fig, axes = plt.subplots(2, 2, figsize=(10, 7), sharex=True)
-axes = axes.flatten()
+
+
+plot_freqs_ind = [0, 20, 30]
 
 x_cut = rx_locs[0:45, 0]
 labels = ['App Res xy', 'Phase xy', 'App Res yx', 'Phase yx']
 
-for i, (ax, label) in enumerate(zip(axes, labels)):
-    ax.plot(x_cut, data[20, i, :], '.-', label=f"Simulated {freqs[20]}Hz")
-    ax.plot(x_cut, data[30, i, :], '.-', label=f"Simulated {freqs[30]}Hz")
-    ax.plot(x_cut, Adata[20, :, i], '.-', label=f"Analytic {freqs[20]}Hz")
-    ax.plot(x_cut, Adata[30, :, i], '.-', label=f"Analytic {freqs[30]}Hz")
-    ax.set_title(label)
-    ax.set_xlabel('Easting (m)')
-    if i % 2 == 0:
-        ax.set_ylabel('App Res (Ωm)')
-    else:
-        ax.set_ylabel('Phase (Degrees)')
-    ax.grid(True, which='both', alpha=0.3)
-    ax.legend(loc='lower left')
+for j in plot_freqs_ind:
+    fig, axes = plt.subplots(2, 2, figsize=(10, 7), sharex=True)
+    axes = axes.flatten()
 
-plt.suptitle(f'Apparent Resistivity and Phase along Cut at y=0')
-plt.tight_layout()
-plt.show()
+    for i, (ax, label) in enumerate(zip(axes, labels)):
+        ax.plot(x_cut, data[j, i, :], '.-', label=f"Simulated")
+        ax.plot(x_cut, Adata[j, :, i], '.-', label=f"Analytic")
+        ax.set_title(label)
+        ax.set_xlabel('Easting (m)')
+        if i % 2 == 0:
+            ax.set_ylabel('App Res (Ωm)')
+        else:
+            ax.set_ylabel('Phase (Degrees)')
+        ax.grid(True, which='both', alpha=0.3)
+        ax.legend(loc='lower left')
+
+    plt.suptitle(f'Apparent Resistivity and Phase along Cut at y=0 for {freqs[j]}Hz')
+    plt.tight_layout()
+    plt.show()
