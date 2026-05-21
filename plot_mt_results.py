@@ -36,7 +36,7 @@ phase_yx = data[:, 3, :]
 
 
 
-plot_freqs_ind = [0, 20, 30]
+plot_freqs_ind = [0, 10, 20, 30, 40, 50]
 
 x_cut = rx_locs[0:45, 0]
 labels = ['App Res xy', 'Phase xy', 'App Res yx', 'Phase yx']
@@ -45,13 +45,18 @@ for j in plot_freqs_ind:
     fig, axes = plt.subplots(2, 2, figsize=(10, 7), sharex=True)
     axes = axes.flatten()
 
+    print("=====================")
+    print(f"Frequency {freqs[j]} Hz:")
+
     for i, (ax, label) in enumerate(zip(axes, labels)):
-        ax.plot(x_cut, data[j, i, :], '.-', label=f"Simulated")
-        ax.plot(x_cut, Adata[j, :, i], '.-', label=f"Analytic")
+        ax.plot(x_cut, data[j, i, :], '.-', label="Simulated")
+        ax.plot(x_cut, Adata[j, :, i], '.-', label="Analytic")
         ax.set_title(label)
         ax.set_xlabel('Easting (m)')
         if i % 2 == 0:
             ax.set_ylabel('App Res (Ωm)')
+            ax.plot(x_cut, data[j, i, :]-Adata[j, :, i], '.-', label="Residual: Sim - Analytic")
+            print(f"{label}:     Max residual: {max(np.abs(data[j, i, :]-Adata[j, :, i])) :.3}       Squared Mean: {np.mean(np.square(np.abs(data[j, i, :]-Adata[j, :, i]))) :.3}")
         else:
             ax.set_ylabel('Phase (Degrees)')
         ax.grid(True, which='both', alpha=0.3)
