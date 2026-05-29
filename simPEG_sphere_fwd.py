@@ -45,11 +45,6 @@ for x in x_positions:
         rx_locs.append([x, y, 0])
 rx_locs = np.array(rx_locs)
 
-# CHECKPOINT
-plt.scatter(rx_locs[:,0], rx_locs[:,1])
-plt.show()
-
-
 # ======================================
 # SETUP MESH
 # ======================================
@@ -82,7 +77,7 @@ mesh.refine_box(
 mesh.refine_box(
     [-10000, -10000, -5000],
     [10000, 10000, 0],
-    levels=5,
+    levels=10,
     finalize=False
 )
 
@@ -103,9 +98,9 @@ mesh.refine_points(refine_pts, padding_cells_by_level=[2, 1], finalize=False)
 mesh.finalize()
 
 # CHECKPOINT
-print(f"Mesh cells: {mesh.nC:,}")
-print(f"Mesh x extent: {mesh.nodes_x[[0,-1]]/1000} km")
-print(f"Mesh z extent: {mesh.nodes_z[[0,-1]]/1000} km")
+# print(f"Mesh cells: {mesh.nC:,}")
+# print(f"Mesh x extent: {mesh.nodes_x[[0,-1]]/1000} km")
+# print(f"Mesh z extent: {mesh.nodes_z[[0,-1]]/1000} km")
 
 
 # ======================================
@@ -175,8 +170,10 @@ source_list = []
 
 for f in freqs_red: # running on reduced freqs
     rx_list = []
+    rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='xy', component='complex'))
     rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='xy', component='apparent_resistivity'))
     rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='xy', component='phase'))
+    rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='yx', component='complex'))
     rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='yx', component='apparent_resistivity'))
     rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='yx', component='phase'))
     source_list.append(nsem.sources.PlanewaveXYPrimary(rx_list, frequency=f, sigma_primary=background_model))
@@ -208,13 +205,13 @@ dpred = sim.dpred(conductivity_model)
 end_time = time.time()
 sim_time = end_time - start_time
 print(f"Finished Forward Simulation in {sim_time:.4f} seconds")
-print(f"Expected data shape: {len(freqs_red)} x {len(rx_locs)} x 4 = {len(freqs_red) * len(rx_locs) * 4}") # for reduced freqs
+print(f"Expected data shape: {len(freqs_red)} x {len(rx_locs)} x 6 = {len(freqs_red) * len(rx_locs) * 6}") # for reduced freqs
 print("Survey data shape:", dpred.shape)
 
-data = np.zeros([len(freqs), 4, rx_locs.shape[0]])
+data = np.zeros([len(freqs), 6, rx_locs.shape[0]])
 
 # processing reduced freqs
-data_red = dpred.reshape(len(freqs_red), 4, rx_locs.shape[0]) 
+data_red = dpred.reshape(len(freqs_red), 6, rx_locs.shape[0]) 
 for i, f in enumerate(freqs):
     if f in freqs_red:
         red_ind = np.where(freqs_red == f)[0][0] 
