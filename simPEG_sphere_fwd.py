@@ -98,9 +98,9 @@ mesh.refine_points(refine_pts, padding_cells_by_level=[2, 1], finalize=False)
 mesh.finalize()
 
 # CHECKPOINT
-# print(f"Mesh cells: {mesh.nC:,}")
-# print(f"Mesh x extent: {mesh.nodes_x[[0,-1]]/1000} km")
-# print(f"Mesh z extent: {mesh.nodes_z[[0,-1]]/1000} km")
+print(f"Mesh cells: {mesh.nC:,}")
+print(f"Mesh x extent: {mesh.nodes_x[[0,-1]]/1000} km")
+print(f"Mesh z extent: {mesh.nodes_z[[0,-1]]/1000} km")
 
 
 # ======================================
@@ -146,9 +146,9 @@ cb = plt.colorbar(out[0], ax=ax1, orientation='vertical')
 cb.set_label('Conductivity (S/m)')
 
 # plot a zoomed in cross section
-ax1.set_xlim(mesh.nodes_x[[0,-1]]/20)
-ax1.set_ylim(mesh.nodes_z[[0,-1]]/40)
-plt.show()
+# ax1.set_xlim(mesh.nodes_x[[0,-1]]/20)
+# ax1.set_ylim(mesh.nodes_z[[0,-1]]/40)
+# plt.show()
 
 # ======================================
 # SETUP FREQUENCIES AND SURVEY
