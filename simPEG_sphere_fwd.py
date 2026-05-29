@@ -170,10 +170,12 @@ source_list = []
 
 for f in freqs_red: # running on reduced freqs
     rx_list = []
-    rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='xy', component='complex'))
+    rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='xy', component='real'))
+    rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='xy', component='imag'))
     rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='xy', component='apparent_resistivity'))
     rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='xy', component='phase'))
-    rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='yx', component='complex'))
+    rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='yx', component='real'))
+    rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='yx', component='imag'))
     rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='yx', component='apparent_resistivity'))
     rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='yx', component='phase'))
     source_list.append(nsem.sources.PlanewaveXYPrimary(rx_list, frequency=f, sigma_primary=background_model))
@@ -205,13 +207,13 @@ dpred = sim.dpred(conductivity_model)
 end_time = time.time()
 sim_time = end_time - start_time
 print(f"Finished Forward Simulation in {sim_time:.4f} seconds")
-print(f"Expected data shape: {len(freqs_red)} x {len(rx_locs)} x 6 = {len(freqs_red) * len(rx_locs) * 6}") # for reduced freqs
+print(f"Expected data shape: {len(freqs_red)} x {len(rx_locs)} x 8 = {len(freqs_red) * len(rx_locs) * 8}") # for reduced freqs
 print("Survey data shape:", dpred.shape)
 
-data = np.zeros([len(freqs), 6, rx_locs.shape[0]])
+data = np.zeros([len(freqs), 8, rx_locs.shape[0]])
 
 # processing reduced freqs
-data_red = dpred.reshape(len(freqs_red), 6, rx_locs.shape[0]) 
+data_red = dpred.reshape(len(freqs_red), 8, rx_locs.shape[0]) 
 for i, f in enumerate(freqs):
     if f in freqs_red:
         red_ind = np.where(freqs_red == f)[0][0] 
