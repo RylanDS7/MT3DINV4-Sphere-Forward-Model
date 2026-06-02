@@ -110,12 +110,14 @@ plt.savefig("figure_out/xyCompare.png")
 # Apparent resisitivty and phase residuals xy
 # ======================
 
-fig, axes = plt.subplots(1, 2, figsize=(16, 8), sharex=True)
+fig, axes = plt.subplots(2, 2, figsize=(16, 10), sharex=True)
 axes = axes.flatten()
 
 for i in plot_freqs_ind:
     axes[0].plot(x_cut, data[i, 2, 22::45]-Adata[i, :, 2], '.-', label=f"Residuals {freqs[i]}Hz")
     axes[1].plot(x_cut, data[i, 3, 22::45]-Adata[i, :, 3], '.-', label=f"Residuals {freqs[i]}Hz")
+    axes[2].plot(x_cut, 100*(data[i, 2, 22::45]-Adata[i, :, 2])/data[i, 2, 22::45], '.-', label=f"Percent Residuals {freqs[i]}Hz")
+    axes[3].plot(x_cut, 100*(data[i, 3, 22::45]-Adata[i, :, 3])/data[i, 3, 22::45], '.-', label=f"Percent Residuals {freqs[i]}Hz")
 
 axes[0].set_title("Apparent Resisitivy xy")
 axes[0].set_xlabel('Easting (m)')
@@ -125,6 +127,12 @@ axes[1].set_title("Phase xy")
 axes[1].set_xlabel('Easting (m)')
 axes[1].set_ylabel('Phase (Degrees)')
 axes[1].legend()
+axes[2].set_xlabel('Easting (m)')
+axes[2].set_ylabel('Percent')
+axes[2].legend()
+axes[3].set_xlabel('Easting (m)')
+axes[3].set_ylabel('Percent')
+axes[3].legend()
 plt.suptitle("xy Apparent Resistivity and Phase Residuals along Cut at y=0")
 plt.savefig("figure_out/xyResiduals.png")
 
@@ -160,12 +168,14 @@ plt.savefig("figure_out/yxCompare.png")
 # Apparent resisitivty and phase residuals yx
 # ======================
 
-fig, axes = plt.subplots(1, 2, figsize=(16, 8), sharex=True)
+fig, axes = plt.subplots(2, 2, figsize=(16, 10), sharex=True)
 axes = axes.flatten()
 
 for i in plot_freqs_ind:
     axes[0].plot(x_cut, data[i, 6, 22::45]-Adata[i, :, 6], '.-', label=f"Residuals {freqs[i]}Hz")
     axes[1].plot(x_cut, data[i, 7, 22::45]-Adata[i, :, 7], '.-', label=f"Residuals {freqs[i]}Hz")
+    axes[2].plot(x_cut, 100*(data[i, 6, 22::45]-Adata[i, :, 6])/data[i, 6, 22::45], '.-', label=f"Percent Residuals {freqs[i]}Hz")
+    axes[3].plot(x_cut, 100*(data[i, 7, 22::45]-Adata[i, :, 7])/data[i, 7, 22::45], '.-', label=f"Percent Residuals {freqs[i]}Hz")
 
 axes[0].set_title("Apparent Resisitivy yx")
 axes[0].set_xlabel('Easting (m)')
@@ -175,5 +185,11 @@ axes[1].set_title("Phase yx")
 axes[1].set_xlabel('Easting (m)')
 axes[1].set_ylabel('Phase (Degrees)')
 axes[1].legend()
+axes[2].set_xlabel('Easting (m)')
+axes[2].set_ylabel('Percent')
+axes[2].legend()
+axes[3].set_xlabel('Easting (m)')
+axes[3].set_ylabel('Percent')
+axes[3].legend()
 plt.suptitle("yx Apparent Resistivity and Phase Residuals along Cut at y=0")
 plt.savefig("figure_out/yxResiduals.png")
