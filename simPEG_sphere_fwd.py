@@ -49,7 +49,7 @@ rx_locs = np.array(rx_locs)
 # SETUP MESH
 # ======================================
 
-dh = 25 # fine cell size
+dh = 20 # fine cell size
 
 # Skin depth at 0.001 Hz ~ 500 km, use 5x = 2500 km
 dom_width_x = 500000.0  # 500 km
@@ -69,7 +69,7 @@ mesh = TreeMesh([hx, hy, hz], x0="CCC", diagonal_balance=True)
 mesh.refine_box(
     [-250000, -250000, -250000],
     [250000, 250000, 0],
-    levels=3,
+    levels=4,
     finalize=False
 )
 
@@ -77,15 +77,15 @@ mesh.refine_box(
 mesh.refine_box(
     [-10000, -10000, -5000],
     [10000, 10000, 0],
-    levels=10,
+    levels=11,
     finalize=False
 )
 
 # Fine refinement around the sphere
-mesh.refine_box(
-    [-1500,-1500,-2500],
-    [1500,1500,0],
-    levels=-2,
+mesh.refine_ball(
+    [0,0,-1000],
+    750,
+    levels=-1,
     finalize=False
 )
 
@@ -146,9 +146,9 @@ cb = plt.colorbar(out[0], ax=ax1, orientation='vertical')
 cb.set_label('Conductivity (S/m)')
 
 # plot a zoomed in cross section
-# ax1.set_xlim(mesh.nodes_x[[0,-1]]/20)
-# ax1.set_ylim(mesh.nodes_z[[0,-1]]/40)
-# plt.show()
+ax1.set_xlim(mesh.nodes_x[[0,-1]]/20)
+ax1.set_ylim(mesh.nodes_z[[0,-1]]/40)
+plt.show()
 
 # ======================================
 # SETUP FREQUENCIES AND SURVEY

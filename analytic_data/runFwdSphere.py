@@ -24,16 +24,16 @@ thk = np.zeros(nlyr)
 # =========================================================
 radius = 500.0
 depth = 1000.0
-sphres = 0.1   # conductive anomaly
+sphres = 0.1   # sphere conductivity
 
 
 # =========================================================
 # 3. FREQUENCIES
 # =========================================================
 # nf = 71
-# freq = np.logspace(-3, 4, nf)   # 0.001 → 10000 Hz
+# freq = np.logspace(-3, 4, nf)   # 0.001 to 10000 Hz
 nf = 1
-freq = np.logspace(-3,-3,nf)
+freq = [100] # freqs to get sol for
 
 # =========================================================
 # 4. RECEIVER LOCATIONS
@@ -43,7 +43,7 @@ x_list = np.array([
 0,10,20,30,40,50,60,70,80,90,100,125,150,200,250,300,400,500,750,1000,1500,2000,5000
 ])
 
-y_list = np.array([0])
+y_list = np.array([0]) # rx cutplane
 
 nx = len(x_list)
 ny = len(y_list)
