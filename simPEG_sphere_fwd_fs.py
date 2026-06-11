@@ -7,7 +7,7 @@ from simpeg.utils import model_builder
 from pymatsolver import Pardiso
 
 # discretize functionality
-from discretize import TreeMesh
+from discretize import TreeMesh, TensorMesh
 from discretize.utils import mkvc, active_from_xyz
 
 import numpy as np
@@ -136,14 +136,19 @@ background_model = sigma_air * np.ones(mesh.nC)
 background_model[earth_inds] = background_conductivity
 
 # CHECKPOINT
-fig = plt.figure(figsize=(10, 4.5))
-ax1 = fig.add_axes([0.15, 0.15, 0.68, 0.75])
+fig = plt.figure(figsize=(20, 12))
+ax1 = fig.add_axes([0.1, 0.1, 0.8, 0.8])
 out = mesh.plot_slice(
     conductivity_model,
     ax=ax1,
     normal="Y",
     ind=int(len(mesh.h[1]) / 2),
     grid=True,
+    grid_opts={
+        "color": "black", 
+        "linewidth": 0.5,
+        "alpha": 0.3
+    },
     pcolor_opts={
         "cmap": "viridis",
         "norm": LogNorm(vmin=1e-8, vmax=10)
@@ -154,9 +159,10 @@ cb = plt.colorbar(out[0], ax=ax1, orientation='vertical')
 cb.set_label('Conductivity (S/m)')
 
 # plot a zoomed in cross section
-ax1.set_xlim(mesh.nodes_x[[0,-1]]/20)
-ax1.set_ylim(mesh.nodes_z[[0,-1]]/40)
-plt.show()
+ax1.set_xlim([rx_locs[:, 0].min()/3, rx_locs[:, 0].max()/3])
+ax1.set_ylim([-2000, 200]) # zoom in around the sphere
+plt.title(f"Conductivity Model Cross Section at y=0, {mesh.nC} cells")
+plt.savefig("figure_out/mesh.png")
 
 # ======================================
 # SETUP FREQUENCIES AND SURVEY
@@ -178,15 +184,15 @@ source_list = []
 
 for f in freqs_red: # running on reduced freqs
     rx_list = []
-    rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='xy', component='real'))
-    rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='xy', component='imag'))
-    rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='xy', component='apparent_resistivity'))
-    rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='xy', component='phase'))
-    rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='yx', component='real'))
-    rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='yx', component='imag'))
-    rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='yx', component='apparent_resistivity'))
-    rx_list.append(nsem.receivers.Impedance(rx_locs, orientation='yx', component='phase'))
-    source_list.append(nsem.sources.PlanewaveXYPrimary(rx_list, frequency=f, sigma_primary=background_model))
+    rx_list.append(nsem.receivers.Impedance(locations_e=rx_locs, locations_h=rx_locs, orientation='xy', component='real'))
+    rx_list.append(nsem.receivers.Impedance(locations_e=rx_locs, locations_h=rx_locs, orientation='xy', component='imag'))
+    rx_list.append(nsem.receivers.Impedance(locations_e=rx_locs, locations_h=rx_locs, orientation='xy', component='apparent_resistivity'))
+    rx_list.append(nsem.receivers.Impedance(locations_e=rx_locs, locations_h=rx_locs, orientation='xy', component='phase'))
+    rx_list.append(nsem.receivers.Impedance(locations_e=rx_locs, locations_h=rx_locs, orientation='yx', component='real'))
+    rx_list.append(nsem.receivers.Impedance(locations_e=rx_locs, locations_h=rx_locs, orientation='yx', component='imag'))
+    rx_list.append(nsem.receivers.Impedance(locations_e=rx_locs, locations_h=rx_locs, orientation='yx', component='apparent_resistivity'))
+    rx_list.append(nsem.receivers.Impedance(locations_e=rx_locs, locations_h=rx_locs, orientation='yx', component='phase'))
+    source_list.append(nsem.sources.FictitiousSource(rx_list, frequency=f))
 
 survey = nsem.survey.Survey(source_list)
 
@@ -195,11 +201,15 @@ survey = nsem.survey.Survey(source_list)
 # SETUP SIMULATION
 # ======================================
 
-sim = nsem.Simulation3DPrimarySecondary(
+mesh_1d = TensorMesh([hz], origin=np.array([mesh.origin[-1]]))
+sigma_1d = sigma_air * np.ones(mesh_1d.n_cells)
+sigma_1d[mesh_1d.cell_centers < 0.] = background_conductivity
+
+sim = nsem.simulation.Simulation3DElectricFieldFictitious(
     mesh,
     survey=survey,
     sigmaMap=maps.IdentityMap(mesh),
-    sigmaPrimary=background_model,
+    sigma_background=sigma_1d,
     forward_only=True,
     solver=Pardiso
 )

@@ -8,35 +8,32 @@ data_path = "simPEG_data/"
 analytic_path = "analytic_data/"
 
 # load and parse analytic data
-Adata = np.zeros([71, 45, 8])
-for f_ind in np.arange(71):
-    try:
-        appresA = np.load(analytic_path+'appres'+str(f_ind)+'.npy')
-        impA = np.load(analytic_path+'imp'+str(f_ind)+'.npy')
-        phaseA = np.load(analytic_path+'phase'+str(f_ind)+'.npy')
+Adata = np.zeros([71, 45, 45, 8])
 
-        Adata[f_ind, :, 4] = -impA[0, :, 0, 1, 0].real # impedence_yx in simpeg convention
-        Adata[f_ind, :, 5] = -impA[0, :, 0, 1, 0].imag # impedence_yx in simpeg convention
-        Adata[f_ind, :, 6] = appresA[0, :, 0, 1, 0] # rho_yx in simpeg convention
-        Adata[f_ind, :, 7] = phaseA[0, :, 0, 1, 0] + 180 # phase_yx in simpeg convention
-        Adata[f_ind, :, 0] = impA[0, :, 0, 0, 1].real # impedence_xy in simpeg convention       
-        Adata[f_ind, :, 1] = impA[0, :, 0, 0, 1].imag # impedence_xy in simpeg convention         
-        Adata[f_ind, :, 2] = appresA[0, :, 0, 0, 1] # rho_xy in simpeg convention
-        Adata[f_ind, :, 3] = phaseA[0, :, 0, 0, 1] # phase_xy in simpeg convention
-    except FileNotFoundError:
-        continue
+appresA = np.load(analytic_path+'appres.npy')
+impA = np.load(analytic_path+'imp.npy')
+phaseA = np.load(analytic_path+'phase.npy')
+
+Adata[:, :, :, 4] = -impA[:, :, :, 1, 0].real # impedence_yx in simpeg convention
+Adata[:, :, :, 5] = -impA[:, :, :, 1, 0].imag # impedence_yx in simpeg convention
+Adata[:, :, :, 6] = appresA[:, :, :, 1, 0] # rho_yx in simpeg convention
+Adata[:, :, :, 7] = phaseA[:, :, :, 1, 0] + 180 # phase_yx in simpeg convention
+Adata[:, :, :, 0] = impA[:, :, :, 0, 1].real # impedence_xy in simpeg convention       
+Adata[:, :, :, 1] = impA[:, :, :, 0, 1].imag # impedence_xy in simpeg convention         
+Adata[:, :, :, 2] = appresA[:, :, :, 0, 1] # rho_xy in simpeg convention
+Adata[:, :, :, 3] = phaseA[:, :, :, 0, 1] # phase_xy in simpeg convention
 
 # load and parse simPEG data
-dpred = np.load(data_path+'dpred02.npy')
-freqs = np.load(data_path+'freqs02.npy')
-rx_locs = np.load(data_path+'rx_locs02.npy')
+dpred = np.load(data_path+'dpred.npy')
+freqs = np.load(data_path+'freqs.npy')
+rx_locs = np.load(data_path+'rx_locs.npy')
 
 data = dpred
 data[:, 3, :] += 180 # app resistivity phase quadrant correction
 data[:, 0, :] = -data[:, 0, :]
 data[:, 1, :] = -data[:, 1, :]
 
-plot_freqs_ind = [0, 10, 20, 30] # plot 1 freq per decade
+plot_freqs_ind = [0, 10, 20, 30, 40, 50] # plot 1 freq per decade
 
 x_cut = rx_locs[22::45, 0] # cut along y=0
 
@@ -53,20 +50,20 @@ for j in plot_freqs_ind:
     for i, (ax, label) in enumerate(zip(axes, labels)):
         if i % 4 == 2: # Apparent resistivity plotting
             ax.plot(x_cut, data[j, i, 22::45], '.-', label="Simulated")
-            ax.plot(x_cut, Adata[j, :, i], '.-', label="Analytic")
+            ax.plot(x_cut, Adata[j, :, 22, i], '.-', label="Analytic")
             ax.set_ylabel('App Res (Ωm)')
-            ax.plot(x_cut, data[j, i, 22::45]-Adata[j, :, i], '.-', label="Residual: Sim - Analytic")
+            ax.plot(x_cut, data[j, i, 22::45]-Adata[j, :, 22, i], '.-', label="Residual: Sim - Analytic")
         elif i % 4 == 3: # Phase plotting
             ax.plot(x_cut, data[j, i, 22::45], '.-', label="Simulated")
-            ax.plot(x_cut, Adata[j, :, i], '.-', label="Analytic")
+            ax.plot(x_cut, Adata[j, :, 22, i], '.-', label="Analytic")
             ax.set_ylabel('Phase (Degrees)')
         elif i % 4 == 0: # Real Impedance plotting
             ax.plot(x_cut, data[j, i, 22::45], '.-', label="Simulated")
-            ax.plot(x_cut, Adata[j, :, i], '.-', label="Analytic")
+            ax.plot(x_cut, Adata[j, :, 22, i], '.-', label="Analytic")
             ax.set_ylabel('Real Impedance (Ω)')
         else: # Imag Impedance plotting
             ax.plot(x_cut, data[j, i, 22::45], '.-', label="Simulated")
-            ax.plot(x_cut, Adata[j, :, i], '.-', label="Analytic")
+            ax.plot(x_cut, Adata[j, :, 22, i], '.-', label="Analytic")
             ax.set_ylabel('Imag Impedance (Ω)')
 
         ax.set_title(label)
@@ -89,9 +86,9 @@ axes = axes.flatten()
 
 for i in plot_freqs_ind:
     axes[0].plot(x_cut, data[i, 2, 22::45], '.-', label=f"Simulated {freqs[i]}Hz")
-    axes[0].plot(x_cut, Adata[i, :, 2], '.-', label=f"Analytic {freqs[i]}Hz")
+    axes[0].plot(x_cut, Adata[i, :, 22, 2], '.-', label=f"Analytic {freqs[i]}Hz")
     axes[1].plot(x_cut, data[i, 3, 22::45], '.-', label=f"Simulated {freqs[i]}Hz")
-    axes[1].plot(x_cut, Adata[i, :, 3], '.-', label=f"Analytic {freqs[i]}Hz")
+    axes[1].plot(x_cut, Adata[i, :, 22, 3], '.-', label=f"Analytic {freqs[i]}Hz")
 
 axes[0].set_title("Apparent Resisitivy xy")
 axes[0].set_xlabel('Easting (m)')
@@ -114,10 +111,10 @@ fig, axes = plt.subplots(2, 2, figsize=(16, 10), sharex=True)
 axes = axes.flatten()
 
 for i in plot_freqs_ind:
-    axes[0].plot(x_cut, data[i, 2, 22::45]-Adata[i, :, 2], '.-', label=f"Residuals {freqs[i]}Hz")
-    axes[1].plot(x_cut, data[i, 3, 22::45]-Adata[i, :, 3], '.-', label=f"Residuals {freqs[i]}Hz")
-    axes[2].plot(x_cut, 100*(data[i, 2, 22::45]-Adata[i, :, 2])/data[i, 2, 22::45], '.-', label=f"Percent Residuals {freqs[i]}Hz")
-    axes[3].plot(x_cut, 100*(data[i, 3, 22::45]-Adata[i, :, 3])/data[i, 3, 22::45], '.-', label=f"Percent Residuals {freqs[i]}Hz")
+    axes[0].plot(x_cut, data[i, 2, 22::45]-Adata[i, :, 22, 2], '.-', label=f"Residuals {freqs[i]}Hz")
+    axes[1].plot(x_cut, data[i, 3, 22::45]-Adata[i, :, 22, 3], '.-', label=f"Residuals {freqs[i]}Hz")
+    axes[2].plot(x_cut, 100*(data[i, 2, 22::45]-Adata[i, :, 22, 2])/data[i, 2, 22::45], '.-', label=f"Percent Residuals {freqs[i]}Hz")
+    axes[3].plot(x_cut, 100*(data[i, 3, 22::45]-Adata[i, :, 22, 3])/data[i, 3, 22::45], '.-', label=f"Percent Residuals {freqs[i]}Hz")
 
 axes[0].set_title("Apparent Resisitivy xy")
 axes[0].set_xlabel('Easting (m)')
@@ -147,9 +144,9 @@ axes = axes.flatten()
 
 for i in plot_freqs_ind:
     axes[0].plot(x_cut, data[i, 6, 22::45], '.-', label=f"Simulated {freqs[i]}Hz")
-    axes[0].plot(x_cut, Adata[i, :, 6], '.-', label=f"Analytic {freqs[i]}Hz")
+    axes[0].plot(x_cut, Adata[i, :, 22, 6], '.-', label=f"Analytic {freqs[i]}Hz")
     axes[1].plot(x_cut, data[i, 7, 22::45], '.-', label=f"Simulated {freqs[i]}Hz")
-    axes[1].plot(x_cut, Adata[i, :, 7], '.-', label=f"Analytic {freqs[i]}Hz")
+    axes[1].plot(x_cut, Adata[i, :, 22, 7], '.-', label=f"Analytic {freqs[i]}Hz")
 
 axes[0].set_title("Apparent Resisitivy yx")
 axes[0].set_xlabel('Easting (m)')
@@ -172,10 +169,10 @@ fig, axes = plt.subplots(2, 2, figsize=(16, 10), sharex=True)
 axes = axes.flatten()
 
 for i in plot_freqs_ind:
-    axes[0].plot(x_cut, data[i, 6, 22::45]-Adata[i, :, 6], '.-', label=f"Residuals {freqs[i]}Hz")
-    axes[1].plot(x_cut, data[i, 7, 22::45]-Adata[i, :, 7], '.-', label=f"Residuals {freqs[i]}Hz")
-    axes[2].plot(x_cut, 100*(data[i, 6, 22::45]-Adata[i, :, 6])/data[i, 6, 22::45], '.-', label=f"Percent Residuals {freqs[i]}Hz")
-    axes[3].plot(x_cut, 100*(data[i, 7, 22::45]-Adata[i, :, 7])/data[i, 7, 22::45], '.-', label=f"Percent Residuals {freqs[i]}Hz")
+    axes[0].plot(x_cut, data[i, 6, 22::45]-Adata[i, :, 22, 6], '.-', label=f"Residuals {freqs[i]}Hz")
+    axes[1].plot(x_cut, data[i, 7, 22::45]-Adata[i, :, 22, 7], '.-', label=f"Residuals {freqs[i]}Hz")
+    axes[2].plot(x_cut, 100*(data[i, 6, 22::45]-Adata[i, :, 22, 6])/data[i, 6, 22::45], '.-', label=f"Percent Residuals {freqs[i]}Hz")
+    axes[3].plot(x_cut, 100*(data[i, 7, 22::45]-Adata[i, :, 22, 7])/data[i, 7, 22::45], '.-', label=f"Percent Residuals {freqs[i]}Hz")
 
 axes[0].set_title("Apparent Resisitivy yx")
 axes[0].set_xlabel('Easting (m)')
@@ -193,3 +190,36 @@ axes[3].set_ylabel('Percent')
 axes[3].legend()
 plt.suptitle("yx Apparent Resistivity and Phase Residuals along Cut at y=0")
 plt.savefig("figure_out/yxResiduals.png")
+
+import os
+import re
+import img2pdf
+
+# Path to the folder containing your PNG images
+folder_path = './figure_out' 
+
+# Find all PNG files in the directory
+png_files = [f for f in os.listdir(folder_path) if f.lower().endswith('.png')]
+
+def extract_hz(filename):
+    # Force mesh.png to the very beginning
+    if filename.lower() == 'mesh.png':
+        return float('-inf')  # Negative infinity is lower than any number
+        
+    # Searches for a decimal number between "compare" and "Hz"
+    match = re.search(r"compare([\d\.]+)Hz", filename)
+    if match:
+        return float(match.group(1)) # Converts "0.001" into 0.001
+        
+    return float('inf') # Move any other mismatched files to the very end
+
+# 3. Sort using the custom numeric key
+png_files.sort(key=extract_hz)
+
+# Add full paths
+image_paths = [os.path.join(folder_path, f) for f in png_files]
+
+# Convert to PDF and save
+output_pdf = 'figure_out/rstutters_fwd_results.pdf'
+with open(output_pdf, "wb") as f:
+    f.write(img2pdf.convert(image_paths))
