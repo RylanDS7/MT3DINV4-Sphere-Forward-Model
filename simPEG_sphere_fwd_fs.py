@@ -17,6 +17,7 @@ from matplotlib.colors import LogNorm
 
 import time
 
+run_num = "002" # for saving outputs to different folders
 
 # ======================================
 # Define receiver locations
@@ -49,7 +50,7 @@ rx_locs = np.array(rx_locs)
 # SETUP MESH
 # ======================================
 
-dh = 20 # fine cell size
+dh = 10 # fine cell size
 
 # Skin depth at 0.001 Hz ~ 500 km, use 5x = 2500 km
 dom_width_x = 500000.0  # 500 km
@@ -77,7 +78,7 @@ mesh.refine_box(
 mesh.refine_box(
     [-10000, -10000, -5000],
     [10000, 10000, 0],
-    levels=11,
+    levels=7,
     finalize=False
 )
 
@@ -89,11 +90,19 @@ mesh.refine_box(
     finalize=False
 )
 
+# Finer refinement around the rxs surface
+mesh.refine_box(
+    [-5000, -5000, -50],
+    [5000, 5000, 0],
+    levels=-3,
+    finalize=False
+)
+
 # Fine refinement around the sphere
 mesh.refine_ball(
     [0,0,-1000],
-    1000,
-    levels=-1,
+    500,
+    levels=-2,
     finalize=False
 )
 
@@ -101,7 +110,7 @@ mesh.refine_ball(
 refine_pts = np.zeros((len(rx_locs), 3))
 for i, pt in enumerate(rx_locs):
     refine_pts[i] = [pt[0], pt[1], 0]
-mesh.refine_points(refine_pts, padding_cells_by_level=[2, 1], finalize=False)
+mesh.refine_points(refine_pts, padding_cells_by_level=[3, 2, 1], finalize=False)
 
 mesh.finalize()
 
@@ -162,7 +171,7 @@ cb.set_label('Conductivity (S/m)')
 ax1.set_xlim([rx_locs[:, 0].min()/3, rx_locs[:, 0].max()/3])
 ax1.set_ylim([-2000, 200]) # zoom in around the sphere
 plt.title(f"Conductivity Model Cross Section at y=0, {mesh.nC} cells")
-plt.savefig("figure_out/mesh.png")
+plt.savefig(f"figure_out/{run_num}/mesh.png")
 
 # ======================================
 # SETUP FREQUENCIES AND SURVEY

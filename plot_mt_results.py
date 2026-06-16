@@ -4,7 +4,8 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
-data_path = "simPEG_data/"
+run_num = "002"
+data_path = f"simPEG_data/{run_num}/"
 analytic_path = "analytic_data/"
 
 # load and parse analytic data
@@ -73,7 +74,7 @@ for j in plot_freqs_ind:
 
     plt.suptitle(f'Apparent Resistivity, Phase, and Impedance along Cut at y=0 for {freqs[j]}Hz')
     plt.tight_layout()
-    plt.savefig(f"figure_out/compare{freqs[j]}Hz.png")
+    plt.savefig(f"figure_out/{run_num}/compare{freqs[j]}Hz.png")
 
 
 
@@ -99,7 +100,7 @@ axes[1].set_xlabel('Easting (m)')
 axes[1].set_ylabel('Phase (Degrees)')
 axes[1].legend()
 plt.suptitle("xy Apparent Resistivity and Phase along Cut at y=0")
-plt.savefig("figure_out/xyCompare.png")
+plt.savefig(f"figure_out/{run_num}/xyCompare.png")
 
 
 
@@ -131,7 +132,7 @@ axes[3].set_xlabel('Easting (m)')
 axes[3].set_ylabel('Percent')
 axes[3].legend()
 plt.suptitle("xy Apparent Resistivity and Phase Residuals along Cut at y=0")
-plt.savefig("figure_out/xyResiduals.png")
+plt.savefig(f"figure_out/{run_num}/xyResiduals.png")
 
 
 
@@ -157,7 +158,7 @@ axes[1].set_xlabel('Easting (m)')
 axes[1].set_ylabel('Phase (Degrees)')
 axes[1].legend()
 plt.suptitle("yx Apparent Resistivity and Phase along Cut at y=0")
-plt.savefig("figure_out/yxCompare.png")
+plt.savefig(f"figure_out/{run_num}/yxCompare.png")
 
 
 
@@ -189,14 +190,14 @@ axes[3].set_xlabel('Easting (m)')
 axes[3].set_ylabel('Percent')
 axes[3].legend()
 plt.suptitle("yx Apparent Resistivity and Phase Residuals along Cut at y=0")
-plt.savefig("figure_out/yxResiduals.png")
+plt.savefig(f"figure_out/{run_num}/yxResiduals.png")
 
 import os
 import re
 import img2pdf
 
 # Path to the folder containing your PNG images
-folder_path = './figure_out' 
+folder_path = f'./figure_out/{run_num}/' 
 
 # Find all PNG files in the directory
 png_files = [f for f in os.listdir(folder_path) if f.lower().endswith('.png')]
@@ -220,6 +221,6 @@ png_files.sort(key=extract_hz)
 image_paths = [os.path.join(folder_path, f) for f in png_files]
 
 # Convert to PDF and save
-output_pdf = 'figure_out/rstutters_fwd_results.pdf'
+output_pdf = f'figure_out/{run_num}/rstutters_fwd_results.pdf'
 with open(output_pdf, "wb") as f:
     f.write(img2pdf.convert(image_paths))

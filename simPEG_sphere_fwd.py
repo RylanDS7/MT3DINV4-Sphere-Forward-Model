@@ -136,14 +136,19 @@ background_model = sigma_air * np.ones(mesh.nC)
 background_model[earth_inds] = background_conductivity
 
 # CHECKPOINT
-fig = plt.figure(figsize=(10, 4.5))
-ax1 = fig.add_axes([0.15, 0.15, 0.68, 0.75])
+fig = plt.figure(figsize=(20, 12))
+ax1 = fig.add_axes([0.1, 0.1, 0.8, 0.8])
 out = mesh.plot_slice(
     conductivity_model,
     ax=ax1,
     normal="Y",
     ind=int(len(mesh.h[1]) / 2),
     grid=True,
+    grid_opts={
+        "color": "black", 
+        "linewidth": 0.5,
+        "alpha": 0.3
+    },
     pcolor_opts={
         "cmap": "viridis",
         "norm": LogNorm(vmin=1e-8, vmax=10)
@@ -154,9 +159,10 @@ cb = plt.colorbar(out[0], ax=ax1, orientation='vertical')
 cb.set_label('Conductivity (S/m)')
 
 # plot a zoomed in cross section
-ax1.set_xlim(mesh.nodes_x[[0,-1]]/20)
-ax1.set_ylim(mesh.nodes_z[[0,-1]]/40)
-plt.show()
+ax1.set_xlim([rx_locs[:, 0].min()/3, rx_locs[:, 0].max()/3])
+ax1.set_ylim([-2000, 200]) # zoom in around the sphere
+plt.title(f"Conductivity Model Cross Section at y=0, {mesh.nC} cells")
+plt.savefig("figure_out/001/mesh.png")
 
 # ======================================
 # SETUP FREQUENCIES AND SURVEY
