@@ -17,7 +17,7 @@ from matplotlib.colors import LogNorm
 
 import time
 
-run_num = "002" # for saving outputs to different folders
+run_num = "003" # for saving outputs to different folders
 
 # ======================================
 # Define receiver locations
@@ -50,7 +50,7 @@ rx_locs = np.array(rx_locs)
 # SETUP MESH
 # ======================================
 
-dh = 10 # fine cell size
+dh = 25 # fine cell size
 
 # Skin depth at 0.001 Hz ~ 500 km, use 5x = 2500 km
 dom_width_x = 500000.0  # 500 km
@@ -92,9 +92,9 @@ mesh.refine_box(
 
 # Finer refinement around the rxs surface
 mesh.refine_box(
-    [-5000, -5000, -50],
+    [-5000, -5000, -25],
     [5000, 5000, 0],
-    levels=-3,
+    levels=-1,
     finalize=False
 )
 
@@ -102,15 +102,9 @@ mesh.refine_box(
 mesh.refine_ball(
     [0,0,-1000],
     500,
-    levels=-2,
+    levels=-1,
     finalize=False
 )
-
-# Fine refinement near receivers
-refine_pts = np.zeros((len(rx_locs), 3))
-for i, pt in enumerate(rx_locs):
-    refine_pts[i] = [pt[0], pt[1], 0]
-mesh.refine_points(refine_pts, padding_cells_by_level=[3, 2, 1], finalize=False)
 
 mesh.finalize()
 

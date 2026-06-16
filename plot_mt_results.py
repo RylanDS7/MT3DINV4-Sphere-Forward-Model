@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
-run_num = "002"
+run_num = "003"
 data_path = f"simPEG_data/{run_num}/"
 analytic_path = "analytic_data/"
 
