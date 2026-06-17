@@ -17,7 +17,7 @@ from matplotlib.colors import LogNorm
 
 import time
 
-run_num = "003" # for saving outputs to different folders
+run_num = "004" # for saving outputs to different folders
 
 # ======================================
 # Define receiver locations
@@ -92,7 +92,7 @@ mesh.refine_box(
 
 # Finer refinement around the rxs surface
 mesh.refine_box(
-    [-5000, -5000, -25],
+    [-5000, -5000, -50],
     [5000, 5000, 0],
     levels=-1,
     finalize=False
