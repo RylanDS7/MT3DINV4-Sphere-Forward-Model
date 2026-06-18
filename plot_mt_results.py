@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
-run_num = "004"
+run_num = "005"
 data_path = f"simPEG_data/{run_num}/"
 analytic_path = "analytic_data/"
 
@@ -79,6 +79,39 @@ for j in plot_freqs_ind:
 
 
 # ======================
+# Impedance residuals
+# ======================
+
+fig, axes = plt.subplots(2, 2, figsize=(16, 10), sharex=True)
+axes = axes.flatten()
+
+for i in plot_freqs_ind:
+    axes[0].plot(x_cut, 100*(data[i, 0, 22::45]-Adata[i, :, 22, 0])/Adata[i, :, 22, 0], '.-', label=f"Percent Residuals {freqs[i]}Hz")
+    axes[1].plot(x_cut, 100*(data[i, 1, 22::45]-Adata[i, :, 22, 1])/Adata[i, :, 22, 1], '.-', label=f"Percent Residuals {freqs[i]}Hz")
+    axes[2].plot(x_cut, 100*(data[i, 4, 22::45]-Adata[i, :, 22, 4])/Adata[i, :, 22, 4], '.-', label=f"Percent Residuals {freqs[i]}Hz")
+    axes[3].plot(x_cut, 100*(data[i, 5, 22::45]-Adata[i, :, 22, 5])/Adata[i, :, 22, 5], '.-', label=f"Percent Residuals {freqs[i]}Hz")
+
+axes[0].set_title("Real Impedance xy")
+axes[0].set_xlabel('Easting (m)')
+axes[0].set_ylabel('Percent')
+axes[0].legend()
+axes[1].set_title("Imag Impedance xy")
+axes[1].set_xlabel('Easting (m)')
+axes[1].set_ylabel('Percent')
+axes[1].legend()
+axes[2].set_title("Real Impedance yx")
+axes[2].set_xlabel('Easting (m)')
+axes[2].set_ylabel('Percent')
+axes[2].legend()
+axes[3].set_title("Imag Impedance yx")
+axes[3].set_xlabel('Easting (m)')
+axes[3].set_ylabel('Percent')
+axes[3].legend()
+plt.suptitle("Impedance Residuals along Cut at y=0")
+plt.savefig(f"figure_out/{run_num}/impResiduals.png")
+
+
+# ======================
 # Apparent resisitivty and phase xy
 # ======================
 
@@ -114,8 +147,8 @@ axes = axes.flatten()
 for i in plot_freqs_ind:
     axes[0].plot(x_cut, data[i, 2, 22::45]-Adata[i, :, 22, 2], '.-', label=f"Residuals {freqs[i]}Hz")
     axes[1].plot(x_cut, data[i, 3, 22::45]-Adata[i, :, 22, 3], '.-', label=f"Residuals {freqs[i]}Hz")
-    axes[2].plot(x_cut, 100*(data[i, 2, 22::45]-Adata[i, :, 22, 2])/data[i, 2, 22::45], '.-', label=f"Percent Residuals {freqs[i]}Hz")
-    axes[3].plot(x_cut, 100*(data[i, 3, 22::45]-Adata[i, :, 22, 3])/data[i, 3, 22::45], '.-', label=f"Percent Residuals {freqs[i]}Hz")
+    axes[2].plot(x_cut, 100*(data[i, 2, 22::45]-Adata[i, :, 22, 2])/Adata[i, :, 22, 2], '.-', label=f"Percent Residuals {freqs[i]}Hz")
+    axes[3].plot(x_cut, 100*(data[i, 3, 22::45]-Adata[i, :, 22, 3])/Adata[i, :, 22, 3], '.-', label=f"Percent Residuals {freqs[i]}Hz")
 
 axes[0].set_title("Apparent Resisitivy xy")
 axes[0].set_xlabel('Easting (m)')
@@ -172,8 +205,8 @@ axes = axes.flatten()
 for i in plot_freqs_ind:
     axes[0].plot(x_cut, data[i, 6, 22::45]-Adata[i, :, 22, 6], '.-', label=f"Residuals {freqs[i]}Hz")
     axes[1].plot(x_cut, data[i, 7, 22::45]-Adata[i, :, 22, 7], '.-', label=f"Residuals {freqs[i]}Hz")
-    axes[2].plot(x_cut, 100*(data[i, 6, 22::45]-Adata[i, :, 22, 6])/data[i, 6, 22::45], '.-', label=f"Percent Residuals {freqs[i]}Hz")
-    axes[3].plot(x_cut, 100*(data[i, 7, 22::45]-Adata[i, :, 22, 7])/data[i, 7, 22::45], '.-', label=f"Percent Residuals {freqs[i]}Hz")
+    axes[2].plot(x_cut, 100*(data[i, 6, 22::45]-Adata[i, :, 22, 6])/Adata[i, :, 22, 6], '.-', label=f"Percent Residuals {freqs[i]}Hz")
+    axes[3].plot(x_cut, 100*(data[i, 7, 22::45]-Adata[i, :, 22, 7])/Adata[i, :, 22, 7], '.-', label=f"Percent Residuals {freqs[i]}Hz")
 
 axes[0].set_title("Apparent Resisitivy yx")
 axes[0].set_xlabel('Easting (m)')
