@@ -2,6 +2,7 @@
 
 import numpy as np
 import matplotlib as mpl
+from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.pyplot as plt
 
 run_nums = ["001", "002", "003", "004", "005"]
@@ -44,6 +45,8 @@ plot_freqs_ind = [0, 10, 20, 30, 40, 50] # plot 1 freq per decade
 x_cut = rx_locs[22::45, 0] # cut along y=0
 
 mesh_ind = [int(x) for x in run_nums]
+
+pdf = PdfPages("figure_out/compare_runs.pdf")
 
 
 # ======================
@@ -89,7 +92,8 @@ for freq in plot_freqs_ind:
 
 plt.xticks(mesh_ind)
 plt.suptitle("Impedance Residuals at x=0, y=0")
-plt.show()
+pdf.savefig(fig)
+plt.close(fig)
 
 
 # ======================
@@ -135,4 +139,103 @@ for freq in plot_freqs_ind:
 
 plt.xticks(mesh_ind)
 plt.suptitle("Impedance Residuals at x=-5000, y=0")
-plt.show()
+pdf.savefig(fig)
+plt.close(fig)
+
+
+# ======================
+# App res residuals at center sphere
+# ======================
+
+fig, axes = plt.subplots(2, 2, figsize=(16, 10), sharex=True)
+axes = axes.flatten()
+
+for freq in plot_freqs_ind:
+    rho_xy = []
+    phase_xy = []
+    rho_yx = []
+    phase_yx = []
+
+    for run in run_data.values():
+        rho_xy.append(100*(run[freq, 2, 1012]-Adata[freq, 22, 22, 2])/Adata[freq, 22, 22, 2])
+        phase_xy.append(100*(run[freq, 3, 1012]-Adata[freq, 22, 22, 3])/Adata[freq, 22, 22, 3])
+        rho_yx.append(100*(run[freq, 6, 1012]-Adata[freq, 22, 22, 6])/Adata[freq, 22, 22, 6])
+        phase_yx.append(100*(run[freq, 7, 1012]-Adata[freq, 22, 22, 7])/Adata[freq, 22, 22, 7])
+
+    axes[0].plot(mesh_ind, rho_xy, '.-', label=f"{freqs[freq]}Hz")
+    axes[1].plot(mesh_ind, phase_xy, '.-', label=f"{freqs[freq]}Hz")
+    axes[2].plot(mesh_ind, rho_yx, '.-', label=f"{freqs[freq]}Hz")
+    axes[3].plot(mesh_ind, phase_yx, '.-', label=f"{freqs[freq]}Hz")
+
+    axes[0].set_title("Apparent Resistivity xy")
+    axes[0].set_xlabel('Mesh Index')
+    axes[0].set_ylabel('Percent')
+    axes[0].legend()
+    axes[1].set_title("Phase xy")
+    axes[1].set_xlabel('Mesh Index')
+    axes[1].set_ylabel('Percent')
+    axes[1].legend()
+    axes[2].set_title("Apparent Resistivity yx")
+    axes[2].set_xlabel('Mesh Index')
+    axes[2].set_ylabel('Percent')
+    axes[2].legend()
+    axes[3].set_title("Phase yx")
+    axes[3].set_xlabel('Mesh Index')
+    axes[3].set_ylabel('Percent')
+    axes[3].legend()
+
+plt.xticks(mesh_ind)
+plt.suptitle("Apparent Resistivity and Phase Residuals at x=0, y=0")
+pdf.savefig(fig)
+plt.close(fig)
+
+
+# ======================
+# App res residuals at outer receiver
+# ======================
+
+fig, axes = plt.subplots(2, 2, figsize=(16, 10), sharex=True)
+axes = axes.flatten()
+
+for freq in plot_freqs_ind:
+    rho_xy = []
+    phase_xy = []
+    rho_yx = []
+    phase_yx = []
+
+    for run in run_data.values():
+        rho_xy.append(100*(run[freq, 2, 22]-Adata[freq, 0, 22, 2])/Adata[freq, 0, 22, 2])
+        phase_xy.append(100*(run[freq, 3, 22]-Adata[freq, 0, 22, 3])/Adata[freq, 0, 22, 3])
+        rho_yx.append(100*(run[freq, 6, 22]-Adata[freq, 0, 22, 6])/Adata[freq, 00, 22, 6])
+        phase_yx.append(100*(run[freq, 7, 22]-Adata[freq, 0, 22, 7])/Adata[freq, 0, 22, 7])
+
+    axes[0].plot(mesh_ind, rho_xy, '.-', label=f"{freqs[freq]}Hz")
+    axes[1].plot(mesh_ind, phase_xy, '.-', label=f"{freqs[freq]}Hz")
+    axes[2].plot(mesh_ind, rho_yx, '.-', label=f"{freqs[freq]}Hz")
+    axes[3].plot(mesh_ind, phase_yx, '.-', label=f"{freqs[freq]}Hz")
+
+    axes[0].set_title("Apparent Resistivity xy")
+    axes[0].set_xlabel('Mesh Index')
+    axes[0].set_ylabel('Percent')
+    axes[0].legend()
+    axes[1].set_title("Phase xy")
+    axes[1].set_xlabel('Mesh Index')
+    axes[1].set_ylabel('Percent')
+    axes[1].legend()
+    axes[2].set_title("Apparent Resistivity yx")
+    axes[2].set_xlabel('Mesh Index')
+    axes[2].set_ylabel('Percent')
+    axes[2].legend()
+    axes[3].set_title("Phase yx")
+    axes[3].set_xlabel('Mesh Index')
+    axes[3].set_ylabel('Percent')
+    axes[3].legend()
+
+plt.xticks(mesh_ind)
+plt.suptitle("Apparent Resistivity and Phase Residuals at x=-5000, y=0")
+pdf.savefig(fig)
+plt.close(fig)
+
+
+# close the pdf
+pdf.close()
