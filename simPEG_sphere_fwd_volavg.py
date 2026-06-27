@@ -61,9 +61,9 @@ def volume_average_sphere(center, radius, mesh, sphere_sigma, background_sigma, 
         elif all(in_sphere(cell)):
             model[i] = sphere_sigma
         else:
-            log_diff = np.log(sphere_sigma) - np.log(background_sigma)
-            sigma_frac = np.exp(np.log(background_sigma) + cell_fill_fraction(i) * log_diff)
-            model[i] = sigma_frac
+            f = cell_fill_fraction(i)
+            sigma = 1 / ((1-f) * (1 / background_sigma) + f * (1 / sphere_sigma))
+            model[i] = sigma
 
 
 # ======================================
@@ -193,37 +193,37 @@ background_model = sigma_air * np.ones(mesh.nC)
 background_model[earth_inds] = background_conductivity
 
 # CHECKPOINT
-# fig = plt.figure(figsize=(20, 12))
-# ax1 = fig.add_axes([0.1, 0.1, 0.8, 0.8])
-# out = mesh.plot_slice(
-#     conductivity_model,
-#     ax=ax1,
-#     normal="Y",
-#     ind=int(len(mesh.h[1]) / 2),
-#     grid=True,
-#     grid_opts={
-#         "color": "black", 
-#         "linewidth": 0.5,
-#         "alpha": 0.3
-#     },
-#     pcolor_opts={
-#         "cmap": "viridis",
-#         "norm": LogNorm(vmin=1e-8, vmax=10)
-#     }
-# )
+fig = plt.figure(figsize=(20, 12))
+ax1 = fig.add_axes([0.1, 0.1, 0.8, 0.8])
+out = mesh.plot_slice(
+    conductivity_model,
+    ax=ax1,
+    normal="Y",
+    ind=int(len(mesh.h[1]) / 2),
+    grid=True,
+    grid_opts={
+        "color": "black", 
+        "linewidth": 0.5,
+        "alpha": 0.3
+    },
+    pcolor_opts={
+        "cmap": "viridis",
+        "norm": LogNorm(vmin=1e-8, vmax=10)
+    }
+)
 
-# cb = plt.colorbar(out[0], ax=ax1, orientation='vertical')
-# cb.set_label('Conductivity (S/m)')
+cb = plt.colorbar(out[0], ax=ax1, orientation='vertical')
+cb.set_label('Conductivity (S/m)')
 
-# from matplotlib.patches import Circle
-# circle = Circle((0, -1000), radius=500, edgecolor='blue', fill=False)
-# ax1.add_patch(circle)
+from matplotlib.patches import Circle
+circle = Circle((0, -1000), radius=500, edgecolor='blue', fill=False)
+ax1.add_patch(circle)
 
-# # plot a zoomed in cross section
-# ax1.set_xlim([rx_locs[:, 0].min()/3, rx_locs[:, 0].max()/3])
-# ax1.set_ylim([-2000, 200]) # zoom in around the sphere
-# plt.title(f"Conductivity Model Cross Section at y=0, {mesh.nC} cells")
-# plt.show()
+# plot a zoomed in cross section
+ax1.set_xlim([rx_locs[:, 0].min()/3, rx_locs[:, 0].max()/3])
+ax1.set_ylim([-2000, 200]) # zoom in around the sphere
+plt.title(f"Conductivity Model Cross Section at y=0, {mesh.nC} cells")
+plt.show()
 
 # ======================================
 # SETUP FREQUENCIES AND SURVEY

@@ -48,7 +48,7 @@ rx_locs = np.array(rx_locs)
 # SETUP MESH
 # ======================================
 
-dh = 5 # fine cell size
+dh = 10 # fine cell size
 
 # Skin depth at 0.001 Hz ~ 500 km, use 5x = 2500 km
 dom_width_x = 500000.0  # 500 km
@@ -100,7 +100,7 @@ mesh.refine_box(
 mesh.refine_ball(
     [0,0,-1000],
     750,
-    levels=-3,
+    levels=-2,
     finalize=False
 )
 
@@ -108,7 +108,7 @@ mesh.refine_ball(
 refine_pts = np.zeros((len(rx_locs), 3))
 for i, pt in enumerate(rx_locs):
     refine_pts[i] = [pt[0], pt[1], 0]
-mesh.refine_points(refine_pts, padding_cells_by_level=[6, 2, 2], finalize=False)
+mesh.refine_points(refine_pts, padding_cells_by_level=[6, 6, 6, 2], finalize=False)
 
 mesh.finalize()
 
