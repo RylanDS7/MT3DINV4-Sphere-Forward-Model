@@ -33,10 +33,15 @@ data[:, 3, :] += 180 # app resistivity phase quadrant correction
 data[:, 0, :] = -data[:, 0, :]
 data[:, 1, :] = -data[:, 1, :]
 
-dataVA = np.load(data_path+'dpredVA.npy')
+dataVA = np.load(data_path+'dpredVA.npy') # geometric average
 dataVA[:, 3, :] += 180 # app resistivity phase quadrant correction
 dataVA[:, 0, :] = -dataVA[:, 0, :]
 dataVA[:, 1, :] = -dataVA[:, 1, :]
+
+dataVA2 = np.load(data_path+'dpredVA2.npy') # harmonic average
+dataVA2[:, 3, :] += 180 # app resistivity phase quadrant correction
+dataVA2[:, 0, :] = -dataVA2[:, 0, :]
+dataVA2[:, 1, :] = -dataVA2[:, 1, :]
 
 plot_freqs_ind = [0, 10, 20, 30, 40, 50] # plot 1 freq per decade
 
@@ -56,10 +61,15 @@ for i in plot_freqs_ind:
     axes[2].plot(x_cut, 100*(data[i, 4, 22::45]-Adata[i, :, 22, 4])/Adata[i, :, 22, 4], '.-', label=f"Non Vol Avg")
     axes[3].plot(x_cut, 100*(data[i, 5, 22::45]-Adata[i, :, 22, 5])/Adata[i, :, 22, 5], '.-', label=f"Non Vol Avg")
 
-    axes[0].plot(x_cut, 100*(dataVA[i, 0, 22::45]-Adata[i, :, 22, 0])/Adata[i, :, 22, 0], '.-', label=f"Vol Avg")
-    axes[1].plot(x_cut, 100*(dataVA[i, 1, 22::45]-Adata[i, :, 22, 1])/Adata[i, :, 22, 1], '.-', label=f"Vol Avg")
-    axes[2].plot(x_cut, 100*(dataVA[i, 4, 22::45]-Adata[i, :, 22, 4])/Adata[i, :, 22, 4], '.-', label=f"Vol Avg")
-    axes[3].plot(x_cut, 100*(dataVA[i, 5, 22::45]-Adata[i, :, 22, 5])/Adata[i, :, 22, 5], '.-', label=f"Vol Avg")
+    axes[0].plot(x_cut, 100*(dataVA[i, 0, 22::45]-Adata[i, :, 22, 0])/Adata[i, :, 22, 0], '.-', label=f"Geometric Vol Avg")
+    axes[1].plot(x_cut, 100*(dataVA[i, 1, 22::45]-Adata[i, :, 22, 1])/Adata[i, :, 22, 1], '.-', label=f"Geometric Vol Avg")
+    axes[2].plot(x_cut, 100*(dataVA[i, 4, 22::45]-Adata[i, :, 22, 4])/Adata[i, :, 22, 4], '.-', label=f"Geometric Vol Avg")
+    axes[3].plot(x_cut, 100*(dataVA[i, 5, 22::45]-Adata[i, :, 22, 5])/Adata[i, :, 22, 5], '.-', label=f"Geometric Vol Avg")
+
+    axes[0].plot(x_cut, 100*(dataVA2[i, 0, 22::45]-Adata[i, :, 22, 0])/Adata[i, :, 22, 0], '.-', label=f"Harmonic Vol Avg")
+    axes[1].plot(x_cut, 100*(dataVA2[i, 1, 22::45]-Adata[i, :, 22, 1])/Adata[i, :, 22, 1], '.-', label=f"Harmonic Vol Avg")
+    axes[2].plot(x_cut, 100*(dataVA2[i, 4, 22::45]-Adata[i, :, 22, 4])/Adata[i, :, 22, 4], '.-', label=f"Harmonic Vol Avg")
+    axes[3].plot(x_cut, 100*(dataVA2[i, 5, 22::45]-Adata[i, :, 22, 5])/Adata[i, :, 22, 5], '.-', label=f"Harmonic Vol Avg")
 
     axes[0].set_title("Real Impedance xy")
     axes[0].set_xlabel('Easting (m)')
@@ -94,10 +104,15 @@ for i in plot_freqs_ind:
     axes[2].plot(x_cut, data[i, 4, 22::45], '.-', label=f"Non Vol Avg")
     axes[3].plot(x_cut, data[i, 5, 22::45], '.-', label=f"Non Vol Avg")
 
-    axes[0].plot(x_cut, dataVA[i, 0, 22::45], '.-', label=f"Vol Avg")
-    axes[1].plot(x_cut, dataVA[i, 1, 22::45], '.-', label=f"Vol Avg")
-    axes[2].plot(x_cut, dataVA[i, 4, 22::45], '.-', label=f"Vol Avg")
-    axes[3].plot(x_cut, dataVA[i, 5, 22::45], '.-', label=f"Vol Avg")
+    axes[0].plot(x_cut, dataVA[i, 0, 22::45], '.-', label=f"Geometric Vol Avg")
+    axes[1].plot(x_cut, dataVA[i, 1, 22::45], '.-', label=f"Geometric Vol Avg")
+    axes[2].plot(x_cut, dataVA[i, 4, 22::45], '.-', label=f"Geometric Vol Avg")
+    axes[3].plot(x_cut, dataVA[i, 5, 22::45], '.-', label=f"Geometric Vol Avg")
+
+    axes[0].plot(x_cut, dataVA2[i, 0, 22::45], '.-', label=f"Harmonic Vol Avg")
+    axes[1].plot(x_cut, dataVA2[i, 1, 22::45], '.-', label=f"Harmonic Vol Avg")
+    axes[2].plot(x_cut, dataVA2[i, 4, 22::45], '.-', label=f"Harmonic Vol Avg")
+    axes[3].plot(x_cut, dataVA2[i, 5, 22::45], '.-', label=f"Harmonic Vol Avg")
 
     axes[0].plot(x_cut, Adata[i, :, 22, 0], '.-', label=f"Analytic")
     axes[1].plot(x_cut, Adata[i, :, 22, 1], '.-', label=f"Analytic")
