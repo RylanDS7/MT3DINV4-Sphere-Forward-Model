@@ -5,8 +5,8 @@ import matplotlib as mpl
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.pyplot as plt
 
-run_nums = ["45", "44", "54", "53", "52", "62", "61"]
-data_path = "simPEG_data/tradeoff/"
+run_nums = ["43", "53", "63"]
+data_path = "simPEG_data/tradeoff2/"
 analytic_path = "analytic_data/"
 
 # load and parse analytic data
@@ -30,8 +30,8 @@ run_data = {}
 
 for run in run_nums:
     dpred = np.load(data_path+f'dpred{run}.npy')
-    freqs = np.load(data_path+f'freqs{run}.npy')
-    rx_locs = np.load(data_path+f'rx_locs{run}.npy')
+    freqs = np.load(data_path+f'freqs.npy')
+    rx_locs = np.load(data_path+f'rx_locs.npy')
 
     data = dpred
     data[:, 3, :] += 180 # app resistivity phase quadrant correction
@@ -46,7 +46,7 @@ x_cut = rx_locs[22::45, 0] # cut along y=0
 
 mesh_ind = np.arange(len(run_nums))
 
-pdf = PdfPages("figure_out/tradeoff.pdf")
+pdf = PdfPages("figure_out/tradeoff3.pdf")
 
 
 # ======================
