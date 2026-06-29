@@ -5,7 +5,7 @@ import matplotlib as mpl
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.pyplot as plt
 
-run_nums = ["43", "53", "63"]
+run_nums = ["41", "42", "43", "44", "45", "46"]
 data_path = "simPEG_data/tradeoff2/"
 analytic_path = "analytic_data/"
 
@@ -46,7 +46,7 @@ x_cut = rx_locs[22::45, 0] # cut along y=0
 
 mesh_ind = np.arange(len(run_nums))
 
-pdf = PdfPages("figure_out/tradeoff3.pdf")
+pdf = PdfPages("figure_out/tradeoff2.pdf")
 
 
 # ======================
@@ -233,6 +233,52 @@ for freq in plot_freqs_ind:
 
 plt.xticks(mesh_ind)
 plt.suptitle("Apparent Resistivity and Phase Residuals at x=-5000, y=0")
+pdf.savefig(fig)
+plt.close(fig)
+
+
+
+# ======================
+# Condensed residuals plots
+# ======================
+
+fig, axes = plt.subplots(2, 1, figsize=(10, 8), sharex=True)
+axes = axes.flatten()
+
+refine_levels = [2.5, 5, 10, 20, 40, 80]
+
+plot_freqs_ind = [30, 40, 50] # change to smaller range
+
+
+for freq in plot_freqs_ind:
+    real_xy_center = []
+    imag_xy_center = []
+    real_xy_edge = []
+    imag_xy_edge = []
+
+    for run in run_data.values():
+        real_xy_center.append(100*(np.abs(run[freq, 0, 1012]-Adata[freq, 22, 22, 0]))/Adata[freq, 22, 22, 0])
+        imag_xy_center.append(100*(np.abs(run[freq, 1, 1012]-Adata[freq, 22, 22, 1]))/Adata[freq, 22, 22, 1])
+        real_xy_edge.append(100*(np.abs(run[freq, 0, 22]-Adata[freq, 0, 22, 0]))/Adata[freq, 0, 22, 0])
+        imag_xy_edge.append(100*(np.abs(run[freq, 1, 22]-Adata[freq, 0, 22, 1]))/Adata[freq, 0, 22, 1])
+
+    axes[0].plot(refine_levels, real_xy_center, '.-', label=f"Real {freqs[freq]}Hz")
+    axes[0].plot(refine_levels, imag_xy_center, '.-', label=f"Imag {freqs[freq]}Hz")
+    axes[1].plot(refine_levels, real_xy_edge, '.-', label=f"Real {freqs[freq]}Hz")
+    axes[1].plot(refine_levels, imag_xy_edge, '.-', label=f"Imag {freqs[freq]}Hz")
+
+    axes[0].set_title("Impedance xy at x=0, y=0", fontsize=16)
+    axes[0].set_ylabel('Percent', fontsize=15)
+    axes[0].tick_params(axis='both', labelsize=12) 
+    axes[1].set_title("Impedance xy at x=-5000, y=0", fontsize=16)
+    axes[1].set_xlabel('Reciever Refinement (m)', fontsize=15)
+    axes[1].set_ylabel('Percent', fontsize=15)
+    axes[0].tick_params(axis='both', labelsize=12)
+    axes[1].legend(fontsize=14)
+
+plt.xticks([2.5, 10, 20, 40, 80], fontsize=12)
+plt.suptitle("Impendance Residuals as a Function of Reciever Refinement", fontsize=18)
+plt.savefig("figure_out/impRXtradeoff.png")
 pdf.savefig(fig)
 plt.close(fig)
 
