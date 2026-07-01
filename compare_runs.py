@@ -5,7 +5,7 @@ import matplotlib as mpl
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.pyplot as plt
 
-run_nums = ["001", "002", "003", "004", "005", "006"]
+run_nums = ["001", "002", "003", "004", "005", "006", "007"]
 data_path = "simPEG_data/"
 analytic_path = "analytic_data/"
 
