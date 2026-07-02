@@ -6,6 +6,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.pyplot as plt
 
 run_nums = ["41", "42", "43", "44", "45", "46"]
+times = np.array([6175, 5765, 5542, 5349, 5180, 4645])
 data_path = "simPEG_data/tradeoff2/"
 analytic_path = "analytic_data/"
 
@@ -282,6 +283,20 @@ plt.savefig("figure_out/impRXtradeoff.png")
 pdf.savefig(fig)
 plt.close(fig)
 
+
+# ======================
+# Time plot
+# ======================
+
+fig = plt.figure(figsize=(10, 8))
+plt.plot(refine_levels, times / 3600, '.-')
+plt.xticks([2.5, 10, 20, 40, 80], fontsize=12)
+plt.xlabel('Reciever Refinement (m)', fontsize=15)
+plt.ylabel('Computation Time (Hr)', fontsize=15)
+plt.title("Computation Time as a Function of Reciever Refinement", fontsize=18)
+plt.savefig("figure_out/timeRXtradeoff.png")
+pdf.savefig(fig)
+plt.close(fig)
 
 # close the pdf
 pdf.close()

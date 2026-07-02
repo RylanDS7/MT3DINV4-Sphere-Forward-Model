@@ -6,6 +6,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.pyplot as plt
 
 run_nums = ["43", "53", "63", "73"]
+times = np.array([4636, 569, 496, 420])
 data_path = "simPEG_data/tradeoff2/"
 analytic_path = "analytic_data/"
 
@@ -282,6 +283,20 @@ plt.savefig("figure_out/impSPtradeoff.png")
 pdf.savefig(fig)
 plt.close(fig)
 
+
+# ======================
+# Time plot
+# ======================
+
+fig = plt.figure(figsize=(10, 8))
+plt.plot(refine_levels, times / 3600, '.-')
+plt.xticks(refine_levels, fontsize=12)
+plt.xlabel('Sphere Refinement (m)', fontsize=15)
+plt.ylabel('Computation Time (Hr)', fontsize=15)
+plt.title("Computation Time as a Function of Sphere Refinement", fontsize=18)
+plt.savefig("figure_out/timeSPtradeoff.png")
+pdf.savefig(fig)
+plt.close(fig)
 
 # close the pdf
 pdf.close()
