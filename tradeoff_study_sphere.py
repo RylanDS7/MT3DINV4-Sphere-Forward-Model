@@ -270,11 +270,11 @@ for freq in plot_freqs_ind:
     axes[0].set_title("Impedance xy at x=0, y=0", fontsize=16)
     axes[0].set_ylabel('Percent', fontsize=15)
     axes[0].tick_params(axis='both', labelsize=12) 
+    axes[0].legend(fontsize=14)
     axes[1].set_title("Impedance xy at x=-5000, y=0", fontsize=16)
-    axes[1].set_xlabel('Reciever Refinement (m)', fontsize=15)
+    axes[1].set_xlabel('Sphere Refinement (m)', fontsize=15)
     axes[1].set_ylabel('Percent', fontsize=15)
     axes[0].tick_params(axis='both', labelsize=12)
-    axes[1].legend(fontsize=14)
 
 plt.xticks(refine_levels, fontsize=12)
 plt.suptitle("Impendance Residuals as a Function of Sphere Refinement", fontsize=18)

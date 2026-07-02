@@ -137,3 +137,26 @@ for i in plot_freqs_ind:
     axes[3].legend()
     plt.suptitle(f"Impedance Volume Averaged Comparison, {freqs[i]}Hz")
     plt.savefig(f"figure_out/vol_avg/z{freqs[i]}Hz.png")
+
+
+
+# ======================
+# Condensed residuals plot
+# ======================
+
+plt.figure(figsize=(10, 8))
+
+i = 10
+plt.plot(x_cut, 100*(data[i, 4, 22::45]-Adata[i, :, 22, 4])/Adata[i, :, 22, 4], '.-', label=f"Non Vol Avg")
+plt.plot(x_cut, 100*(dataVA[i, 4, 22::45]-Adata[i, :, 22, 4])/Adata[i, :, 22, 4], '.-', label=f"Geometric Vol Avg")
+plt.plot(x_cut, 100*(dataVA2[i, 4, 22::45]-Adata[i, :, 22, 4])/Adata[i, :, 22, 4], '.-', label=f"Harmonic Vol Avg")
+
+plt.xlabel('Easting (m)', fontsize=15)
+plt.xticks(fontsize=12)
+plt.ylabel('Percent', fontsize=15)
+plt.yticks(fontsize=12)
+plt.legend(fontsize=14)
+
+plt.title(f"Real Impendance yx Residuals for Volume Averaging Methods, {freqs[10]}Hz", fontsize=18)
+plt.savefig("figure_out/vol_avg/compare_plot.png")
+plt.close()

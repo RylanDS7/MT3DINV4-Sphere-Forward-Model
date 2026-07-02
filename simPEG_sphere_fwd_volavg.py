@@ -193,7 +193,7 @@ background_model = sigma_air * np.ones(mesh.nC)
 background_model[earth_inds] = background_conductivity
 
 # CHECKPOINT
-fig = plt.figure(figsize=(20, 12))
+fig = plt.figure(figsize=(10, 8))
 ax1 = fig.add_axes([0.1, 0.1, 0.8, 0.8])
 out = mesh.plot_slice(
     conductivity_model,
@@ -220,9 +220,9 @@ circle = Circle((0, -1000), radius=500, edgecolor='blue', fill=False)
 ax1.add_patch(circle)
 
 # plot a zoomed in cross section
-ax1.set_xlim([rx_locs[:, 0].min()/3, rx_locs[:, 0].max()/3])
-ax1.set_ylim([-2000, 200]) # zoom in around the sphere
-plt.title(f"Conductivity Model Cross Section at y=0, {mesh.nC} cells")
+ax1.set_xlim([-750, 750])
+ax1.set_ylim([-1750, -250]) # zoom in around the sphere
+plt.title(f"Harmonic Averaged Conductivity Model Cross Section at y=0", fontsize=18)
 plt.show()
 
 # ======================================
