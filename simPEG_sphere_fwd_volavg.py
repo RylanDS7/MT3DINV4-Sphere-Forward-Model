@@ -180,7 +180,7 @@ conductivity_model = sigma_air * np.ones(mesh.nC)
 earth_inds = mesh.cell_centers[:,2] < 0
 conductivity_model[earth_inds] = background_conductivity
 
-sphere_indices = volume_average_sphere(
+volume_average_sphere(
     center=[0,0,-1000],
     radius=500,
     mesh=mesh,

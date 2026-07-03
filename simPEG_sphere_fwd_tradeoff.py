@@ -19,6 +19,56 @@ import time
 import argparse
 
 
+def volume_average_sphere(center, radius, mesh, sphere_sigma, background_sigma, model):
+    nodes = mesh.total_nodes
+    cells = mesh.cell_nodes
+    cell_vols = mesh.cell_volumes
+    cell_centers = mesh.cell_centers
+
+    def in_sphere(cell):
+        truth = []
+        for node in cell:
+            node_loc = nodes[node]
+            if np.linalg.norm(node_loc - center) > radius:
+                truth.append(False)
+            else:
+                truth.append(True)
+        return np.array(truth)
+    
+
+    def cell_fill_fraction(cell_index):
+        subsamples=10
+        cell_center = cell_centers[cell_index]
+        width = mesh[cell_index].h[0]
+
+        xs = np.linspace(cell_center[0] - width/2, cell_center[0] + width/2, subsamples)
+        ys = np.linspace(cell_center[1] - width/2, cell_center[1] + width/2, subsamples)
+        zs = np.linspace(cell_center[2] - width/2, cell_center[2] + width/2, subsamples)
+
+        xx, yy, zz = np.meshgrid(xs, ys, zs)
+
+        sample_points = np.column_stack([xx.ravel(), yy.ravel(), zz.ravel()])
+
+        sphere_count = 0
+        for pt in sample_points:
+            if np.linalg.norm(pt - center) <= radius:
+                sphere_count += 1
+
+        return sphere_count / (subsamples)**3
+    
+
+    for i, cell in enumerate(cells):
+        if not any(in_sphere(cell)):
+            continue
+        elif all(in_sphere(cell)):
+            model[i] = sphere_sigma
+        else:
+            f = cell_fill_fraction(i)
+            sigma = 1 / ((1-f) * (1 / background_sigma) + f * (1 / sphere_sigma))
+            model[i] = sigma
+
+
+
 def main(sphere_levels, rx_levels):
 
     run_num = f"{np.abs(sphere_levels)}{np.abs(rx_levels)}"
@@ -137,13 +187,14 @@ def main(sphere_levels, rx_levels):
     earth_inds = mesh.cell_centers[:,2] < 0
     conductivity_model[earth_inds] = background_conductivity
 
-    sphere_indices = model_builder.get_indices_sphere(
+    volume_average_sphere(
         center=[0,0,-1000],
         radius=500,
-        cell_centers=mesh.cell_centers
+        mesh=mesh,
+        sphere_sigma=sphere_conductivity,
+        background_sigma=background_conductivity,
+        model=conductivity_model
     )
-
-    conductivity_model[sphere_indices] = sphere_conductivity
 
     background_model = sigma_air * np.ones(mesh.nC)
     background_model[earth_inds] = background_conductivity
