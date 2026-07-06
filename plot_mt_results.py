@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
-run_num = "008"
+run_num = "009"
 data_path = f"simPEG_data/tradeoff_vol_avg/"
 analytic_path = "analytic_data/"
 
@@ -25,7 +25,7 @@ Adata[:, :, :, 2] = appresA[:, :, :, 0, 1] # rho_xy in simpeg convention
 Adata[:, :, :, 3] = phaseA[:, :, :, 0, 1] # phase_xy in simpeg convention
 
 # load and parse simPEG data
-dpred = np.load(data_path+'dpred43.npy')
+dpred = np.load(data_path+'dpred53.npy')
 freqs = np.load(data_path+'freqs.npy')
 rx_locs = np.load(data_path+'rx_locs.npy')
 
