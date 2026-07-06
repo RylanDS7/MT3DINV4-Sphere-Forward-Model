@@ -5,7 +5,8 @@ import matplotlib as mpl
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.pyplot as plt
 
-run_nums = ["51", "52", "53", "54", "55", "56"]
+run_nums_5 = ["51", "52", "53", "54", "55", "56"]
+run_nums_4 = ["43", "44", "45", "46"]
 times = np.array([6175, 5765, 5542, 5349, 5180, 4645]) # TO CHANGE
 data_path = "simPEG_data/tradeoff_vol_avg/"
 analytic_path = "analytic_data/"
@@ -27,9 +28,10 @@ Adata[:, :, :, 2] = appresA[:, :, :, 0, 1] # rho_xy in simpeg convention
 Adata[:, :, :, 3] = phaseA[:, :, :, 0, 1] # phase_xy in simpeg convention
 
 # load and parse simPEG data
-run_data = {}
+run_data_5 = {}
+run_data_4 = {}
 
-for run in run_nums:
+for run in run_nums_5:
     dpred = np.load(data_path+f'dpred{run}.npy')
     freqs = np.load(data_path+f'freqs.npy')
     rx_locs = np.load(data_path+f'rx_locs.npy')
@@ -39,13 +41,26 @@ for run in run_nums:
     data[:, 0, :] = -data[:, 0, :]
     data[:, 1, :] = -data[:, 1, :]
 
-    run_data[run] = data
+    run_data_5[run] = data
+
+
+for run in run_nums_4:
+    dpred = np.load(data_path+f'dpred{run}.npy')
+    freqs = np.load(data_path+f'freqs.npy')
+    rx_locs = np.load(data_path+f'rx_locs.npy')
+
+    data = dpred
+    data[:, 3, :] += 180 # app resistivity phase quadrant correction
+    data[:, 0, :] = -data[:, 0, :]
+    data[:, 1, :] = -data[:, 1, :]
+
+    run_data_4[run] = data
 
 plot_freqs_ind = [0, 10, 20, 30, 40, 50] # plot 1 freq per decade
 
 x_cut = rx_locs[22::45, 0] # cut along y=0
 
-mesh_ind = np.arange(len(run_nums))
+mesh_ind = np.arange(len(run_nums_5))
 
 pdf = PdfPages("figure_out/tradeoff_volavg.pdf")
 
@@ -63,7 +78,7 @@ for freq in plot_freqs_ind:
     real_yx = []
     imag_yx = []
 
-    for run in run_data.values():
+    for run in run_data_5.values():
         real_xy.append(100*(np.abs(run[freq, 0, 1012]-Adata[freq, 22, 22, 0]))/Adata[freq, 22, 22, 0])
         imag_xy.append(100*(np.abs(run[freq, 1, 1012]-Adata[freq, 22, 22, 1]))/Adata[freq, 22, 22, 1])
         real_yx.append(100*(np.abs(run[freq, 4, 1012]-Adata[freq, 22, 22, 4]))/Adata[freq, 22, 22, 4])
@@ -110,7 +125,7 @@ for freq in plot_freqs_ind:
     real_yx = []
     imag_yx = []
 
-    for run in run_data.values():
+    for run in run_data_5.values():
         real_xy.append(100*(np.abs(run[freq, 0, 22]-Adata[freq, 0, 22, 0]))/Adata[freq, 0, 22, 0])
         imag_xy.append(100*(np.abs(run[freq, 1, 22]-Adata[freq, 0, 22, 1]))/Adata[freq, 0, 22, 1])
         real_yx.append(100*(np.abs(run[freq, 4, 22]-Adata[freq, 0, 22, 4]))/Adata[freq, 0, 22, 4])
@@ -157,7 +172,7 @@ for freq in plot_freqs_ind:
     rho_yx = []
     phase_yx = []
 
-    for run in run_data.values():
+    for run in run_data_5.values():
         rho_xy.append(100*(np.abs(run[freq, 2, 1012]-Adata[freq, 22, 22, 2]))/Adata[freq, 22, 22, 2])
         phase_xy.append(100*(np.abs(run[freq, 3, 1012]-Adata[freq, 22, 22, 3]))/Adata[freq, 22, 22, 3])
         rho_yx.append(100*(np.abs(run[freq, 6, 1012]-Adata[freq, 22, 22, 6]))/Adata[freq, 22, 22, 6])
@@ -204,7 +219,7 @@ for freq in plot_freqs_ind:
     rho_yx = []
     phase_yx = []
 
-    for run in run_data.values():
+    for run in run_data_5.values():
         rho_xy.append(100*(np.abs(run[freq, 2, 22]-Adata[freq, 0, 22, 2]))/Adata[freq, 0, 22, 2])
         phase_xy.append(100*(np.abs(run[freq, 3, 22]-Adata[freq, 0, 22, 3]))/Adata[freq, 0, 22, 3])
         rho_yx.append(100*(np.abs(run[freq, 6, 22]-Adata[freq, 0, 22, 6]))/Adata[freq, 00, 22, 6])
@@ -246,7 +261,7 @@ plt.close(fig)
 fig, axes = plt.subplots(2, 1, figsize=(10, 8), sharex=True)
 axes = axes.flatten()
 
-refine_levels = [2.5, 5, 10, 20, 40, 80]
+refine_levels_5 = [2.5, 5, 10, 20, 40, 80]
 
 plot_freqs_ind = [30, 40, 50] # change to smaller range
 
@@ -257,16 +272,16 @@ for freq in plot_freqs_ind:
     real_xy_edge = []
     imag_xy_edge = []
 
-    for run in run_data.values():
+    for run in run_data_5.values():
         real_xy_center.append(100*(np.abs(run[freq, 0, 1012]-Adata[freq, 22, 22, 0]))/Adata[freq, 22, 22, 0])
         imag_xy_center.append(100*(np.abs(run[freq, 1, 1012]-Adata[freq, 22, 22, 1]))/Adata[freq, 22, 22, 1])
         real_xy_edge.append(100*(np.abs(run[freq, 0, 22]-Adata[freq, 0, 22, 0]))/Adata[freq, 0, 22, 0])
         imag_xy_edge.append(100*(np.abs(run[freq, 1, 22]-Adata[freq, 0, 22, 1]))/Adata[freq, 0, 22, 1])
 
-    axes[0].plot(refine_levels, real_xy_center, '.-', label=f"Real {freqs[freq]}Hz")
-    axes[0].plot(refine_levels, imag_xy_center, '.-', label=f"Imag {freqs[freq]}Hz")
-    axes[1].plot(refine_levels, real_xy_edge, '.-', label=f"Real {freqs[freq]}Hz")
-    axes[1].plot(refine_levels, imag_xy_edge, '.-', label=f"Imag {freqs[freq]}Hz")
+    axes[0].plot(refine_levels_5, real_xy_center, '.-', label=f"Real {freqs[freq]}Hz")
+    axes[0].plot(refine_levels_5, imag_xy_center, '.-', label=f"Imag {freqs[freq]}Hz")
+    axes[1].plot(refine_levels_5, real_xy_edge, '.-', label=f"Real {freqs[freq]}Hz")
+    axes[1].plot(refine_levels_5, imag_xy_edge, '.-', label=f"Imag {freqs[freq]}Hz")
 
     axes[0].set_title("Impedance xy at x=0, y=0", fontsize=16)
     axes[0].set_ylabel('Percent', fontsize=15)
@@ -278,8 +293,53 @@ for freq in plot_freqs_ind:
     axes[1].legend(fontsize=14)
 
 plt.xticks([2.5, 10, 20, 40, 80], fontsize=12)
-plt.suptitle("Impendance Residuals as a Function of Reciever Refinement", fontsize=18)
-plt.savefig("figure_out/impRXtradeoff.png")
+plt.suptitle("Impendance Residuals as a Function of Reciever Refinement, 40m Sphere", fontsize=18)
+plt.savefig("figure_out/40impRXtradeoff.png")
+pdf.savefig(fig)
+plt.close(fig)
+
+
+# ======================
+# Condensed refined residuals plots
+# ======================
+
+fig, axes = plt.subplots(2, 1, figsize=(10, 8), sharex=True)
+axes = axes.flatten()
+
+refine_levels_4 = [10, 20, 40, 80]
+
+plot_freqs_ind = [30, 40, 50] # change to smaller range
+
+
+for freq in plot_freqs_ind:
+    real_xy_center = []
+    imag_xy_center = []
+    real_xy_edge = []
+    imag_xy_edge = []
+
+    for run in run_data_4.values():
+        real_xy_center.append(100*(np.abs(run[freq, 0, 1012]-Adata[freq, 22, 22, 0]))/Adata[freq, 22, 22, 0])
+        imag_xy_center.append(100*(np.abs(run[freq, 1, 1012]-Adata[freq, 22, 22, 1]))/Adata[freq, 22, 22, 1])
+        real_xy_edge.append(100*(np.abs(run[freq, 0, 22]-Adata[freq, 0, 22, 0]))/Adata[freq, 0, 22, 0])
+        imag_xy_edge.append(100*(np.abs(run[freq, 1, 22]-Adata[freq, 0, 22, 1]))/Adata[freq, 0, 22, 1])
+
+    axes[0].plot(refine_levels_4, real_xy_center, '.-', label=f"Real {freqs[freq]}Hz")
+    axes[0].plot(refine_levels_4, imag_xy_center, '.-', label=f"Imag {freqs[freq]}Hz")
+    axes[1].plot(refine_levels_4, real_xy_edge, '.-', label=f"Real {freqs[freq]}Hz")
+    axes[1].plot(refine_levels_4, imag_xy_edge, '.-', label=f"Imag {freqs[freq]}Hz")
+
+    axes[0].set_title("Impedance xy at x=0, y=0", fontsize=16)
+    axes[0].set_ylabel('Percent', fontsize=15)
+    axes[0].tick_params(axis='both', labelsize=12) 
+    axes[1].set_title("Impedance xy at x=-5000, y=0", fontsize=16)
+    axes[1].set_xlabel('Reciever Refinement (m)', fontsize=15)
+    axes[1].set_ylabel('Percent', fontsize=15)
+    axes[0].tick_params(axis='both', labelsize=12)
+    axes[1].legend(fontsize=14)
+
+plt.xticks([10, 20, 40, 80], fontsize=12)
+plt.suptitle("Impendance Residuals as a Function of Reciever Refinement, 20m Sphere", fontsize=18)
+plt.savefig("figure_out/20impRXtradeoff.png")
 pdf.savefig(fig)
 plt.close(fig)
 
@@ -289,7 +349,7 @@ plt.close(fig)
 # ======================
 
 fig = plt.figure(figsize=(10, 8))
-plt.plot(refine_levels, times / 3600, '.-')
+plt.plot(refine_levels_5, times / 3600, '.-')
 plt.xticks([2.5, 10, 20, 40, 80], fontsize=12)
 plt.xlabel('Reciever Refinement (m)', fontsize=15)
 plt.ylabel('Computation Time (Hr)', fontsize=15)
