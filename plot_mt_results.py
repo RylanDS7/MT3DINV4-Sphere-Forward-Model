@@ -225,6 +225,27 @@ axes[3].legend()
 plt.suptitle("yx Apparent Resistivity and Phase Residuals along Cut at y=0")
 plt.savefig(f"figure_out/{run_num}/yxResiduals.png")
 
+
+# ======================
+# Plot center residuals at all freqs
+# ======================
+
+plt.figure()
+
+plt.plot(freqs[0:70:10], 100*(data[0:70:10, 0, 1012]-Adata[0:70:10, 22, 22, 0])/Adata[0:70:10, 22, 22, 0], '.-', label="Real Impedance xy")
+plt.plot(freqs[0:70:10], 100*(data[0:70:10, 1, 1012]-Adata[0:70:10, 22, 22, 1])/Adata[0:70:10, 22, 22, 1], '.-', label="Imag Impedance xy")
+plt.plot(freqs[0:70:10], 100*(data[0:70:10, 4, 1012]-Adata[0:70:10, 22, 22, 4])/Adata[0:70:10, 22, 22, 4], '.-', label="Real Impedance yx")
+plt.plot(freqs[0:70:10], 100*(data[0:70:10, 5, 1012]-Adata[0:70:10, 22, 22, 5])/Adata[0:70:10, 22, 22, 5], '.-', label="Imag Impedance yx")
+
+plt.xscale('log')
+plt.legend()
+plt.savefig(f"figure_out/{run_num}/centerFreqResiduals.png")
+
+
+# ======================
+# Compile into pdf
+# ======================
+
 import os
 import re
 import img2pdf
