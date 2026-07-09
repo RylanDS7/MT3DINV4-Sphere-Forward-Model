@@ -193,7 +193,8 @@ background_model = sigma_air * np.ones(mesh.nC)
 background_model[earth_inds] = background_conductivity
 
 # CHECKPOINT
-fig = plt.figure(figsize=(10, 8))
+fig = plt.figure(figsize=(12, 8), dpi=300)
+plt.rcParams.update({'axes.labelsize': 20, 'xtick.labelsize': 16, 'ytick.labelsize': 16})
 ax1 = fig.add_axes([0.1, 0.1, 0.8, 0.8])
 out = mesh.plot_slice(
     conductivity_model,
@@ -208,7 +209,7 @@ out = mesh.plot_slice(
     },
     pcolor_opts={
         "cmap": "viridis",
-        "norm": LogNorm(vmin=1e-8, vmax=10)
+        "norm": LogNorm(vmin=1e-4, vmax=10)
     }
 )
 
@@ -216,14 +217,14 @@ cb = plt.colorbar(out[0], ax=ax1, orientation='vertical')
 cb.set_label('Conductivity (S/m)')
 
 from matplotlib.patches import Circle
-circle = Circle((0, -1000), radius=500, edgecolor='blue', fill=False)
+circle = Circle((0, -1000), radius=500, edgecolor='orange', fill=False)
 ax1.add_patch(circle)
 
 # plot a zoomed in cross section
-ax1.set_xlim([-750, 750])
-ax1.set_ylim([-1750, -250]) # zoom in around the sphere
-plt.title(f"Harmonic Averaged Conductivity Model Cross Section at y=0", fontsize=18)
-plt.show()
+ax1.set_xlim([-550, 550])
+ax1.set_ylim([-1550, -450]) # zoom in around the sphere
+plt.title(f"", fontsize=18)
+plt.savefig("figure_out/vol_avg/harmonic_mesh_zoom.png")
 
 # ======================================
 # SETUP FREQUENCIES AND SURVEY

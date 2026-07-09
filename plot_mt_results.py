@@ -34,7 +34,7 @@ data[:, 3, :] += 180 # app resistivity phase quadrant correction
 data[:, 0, :] = -data[:, 0, :]
 data[:, 1, :] = -data[:, 1, :]
 
-plot_freqs_ind = [0, 10, 20, 30, 40, 50] # plot 1 freq per decade
+plot_freqs_ind = [0, 10, 20, 30, 40, 50, 60] # plot 1 freq per decade
 
 x_cut = rx_locs[22::45, 0] # cut along y=0
 

@@ -5,8 +5,8 @@ import matplotlib as mpl
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.pyplot as plt
 
-run_nums = ["43", "53", "63", "73"]
-times = np.array([4636, 569, 496, 420])
+run_nums = ["43", "53", "63"]
+times = np.array([4636, 569, 496])
 data_path = "simPEG_data/tradeoff2/"
 analytic_path = "analytic_data/"
 
@@ -243,10 +243,10 @@ plt.close(fig)
 # Condensed residuals plots
 # ======================
 
-fig, axes = plt.subplots(2, 1, figsize=(10, 8), sharex=True)
+fig, axes = plt.subplots(2, 1, figsize=(10, 8), sharex=True, sharey=True, dpi=300)
 axes = axes.flatten()
 
-refine_levels = [20, 40, 80, 160]
+refine_levels = [20, 40, 80]
 
 plot_freqs_ind = [30, 40, 50] # change to smaller range
 
@@ -263,22 +263,24 @@ for freq in plot_freqs_ind:
         real_xy_edge.append(100*(np.abs(run[freq, 0, 22]-Adata[freq, 0, 22, 0]))/Adata[freq, 0, 22, 0])
         imag_xy_edge.append(100*(np.abs(run[freq, 1, 22]-Adata[freq, 0, 22, 1]))/Adata[freq, 0, 22, 1])
 
-    axes[0].plot(refine_levels, real_xy_center, '.-', label=f"Real {freqs[freq]}Hz")
-    axes[0].plot(refine_levels, imag_xy_center, '.-', label=f"Imag {freqs[freq]}Hz")
-    axes[1].plot(refine_levels, real_xy_edge, '.-', label=f"Real {freqs[freq]}Hz")
-    axes[1].plot(refine_levels, imag_xy_edge, '.-', label=f"Imag {freqs[freq]}Hz")
+    axes[0].plot(refine_levels, real_xy_center, 'o-', label=f"Real {freqs[freq]}Hz")
+    axes[0].plot(refine_levels, imag_xy_center, 'o-', label=f"Imag {freqs[freq]}Hz")
+    axes[1].plot(refine_levels, real_xy_edge, 'o-', label=f"Real {freqs[freq]}Hz")
+    axes[1].plot(refine_levels, imag_xy_edge, 'o-', label=f"Imag {freqs[freq]}Hz")
 
-    axes[0].set_title("Impedance xy at x=0, y=0", fontsize=16)
-    axes[0].set_ylabel('Percent', fontsize=15)
-    axes[0].tick_params(axis='both', labelsize=12) 
-    axes[0].legend(fontsize=14)
-    axes[1].set_title("Impedance xy at x=-5000, y=0", fontsize=16)
-    axes[1].set_xlabel('Sphere Refinement (m)', fontsize=15)
-    axes[1].set_ylabel('Percent', fontsize=15)
-    axes[0].tick_params(axis='both', labelsize=12)
+    axes[0].set_title("Impedance xy at x=0, y=0", fontsize=24)
+    axes[0].set_ylabel('Percent Residuals', fontsize=20)
+    axes[0].tick_params(axis='both', labelsize=16) 
+    axes[0].grid()
+    axes[1].set_title("Impedance xy at x=-5000, y=0", fontsize=24)
+    axes[1].set_xlabel('Sphere Refinement (m)', fontsize=20)
+    axes[1].set_ylabel('Percent Residuals', fontsize=20)
+    axes[1].tick_params(axis='both', labelsize=16)
+    axes[1].legend(fontsize=15)
+    axes[1].grid()
 
-plt.xticks(refine_levels, fontsize=12)
-plt.suptitle("Impendance Residuals as a Function of Sphere Refinement", fontsize=18)
+plt.xticks([2.5, 10, 20, 40, 80], fontsize=16)
+plt.tight_layout()
 plt.savefig("figure_out/impSPtradeoff.png")
 pdf.savefig(fig)
 plt.close(fig)
