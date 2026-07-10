@@ -223,6 +223,7 @@ ax1.add_patch(circle)
 # plot a zoomed in cross section
 ax1.set_xlim([-550, 550])
 ax1.set_ylim([-1550, -450]) # zoom in around the sphere
+ax1.set_aspect('equal')
 plt.title(f"", fontsize=18)
 plt.savefig("figure_out/vol_avg/harmonic_mesh_zoom.png")
 
