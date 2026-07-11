@@ -48,7 +48,7 @@ rx_locs = np.array(rx_locs)
 # SETUP MESH
 # ======================================
 
-dh = 10 # fine cell size
+dh = 20 # fine cell size
 
 # Skin depth at 0.001 Hz ~ 500 km, use 5x = 2500 km
 dom_width_x = 500000.0  # 500 km
@@ -96,19 +96,19 @@ mesh.refine_box(
     finalize=False
 )
 
-# Fine refinement around the sphere
-mesh.refine_ball(
-    [0,0,-1000],
-    750,
-    levels=-2,
-    finalize=False
-)
+# # Fine refinement around the sphere
+# mesh.refine_ball(
+#     [0,0,-1000],
+#     500,
+#     levels=-2,
+#     finalize=False
+# )
 
-# Fine refinement near receivers
-refine_pts = np.zeros((len(rx_locs), 3))
-for i, pt in enumerate(rx_locs):
-    refine_pts[i] = [pt[0], pt[1], 0]
-mesh.refine_points(refine_pts, padding_cells_by_level=[6, 6, 6, 2], finalize=False)
+# # Fine refinement near receivers
+# refine_pts = np.zeros((len(rx_locs), 3))
+# for i, pt in enumerate(rx_locs):
+#     refine_pts[i] = [pt[0], pt[1], 0]
+# mesh.refine_points(refine_pts, padding_cells_by_level=[2, 1], finalize=False)
 
 mesh.finalize()
 
@@ -137,7 +137,7 @@ sphere_indices = model_builder.get_indices_sphere(
     cell_centers=mesh.cell_centers
 )
 
-conductivity_model[sphere_indices] = sphere_conductivity
+conductivity_model[sphere_indices] = background_conductivity
 
 background_model = sigma_air * np.ones(mesh.nC)
 background_model[earth_inds] = background_conductivity
@@ -184,7 +184,7 @@ freqs = np.logspace(low_freq_order,
                     samples_per_dec*(high_freq_order-low_freq_order)+1)
 
 # reduced frequency list
-freqs_red = np.array([0.001, 0.01, 0.1, 1, 10, 100, 1000])
+freqs_red = np.array([100])
 
 # Data structued as freq x dataType x rx
 source_list = []
@@ -244,6 +244,22 @@ for i, f in enumerate(freqs):
         red_ind = np.where(freqs_red == f)[0][0] 
         data[i, :, :] = data_red[red_ind, :, :]
 
-np.save('simPEG_data/dpred.npy', data)
-np.save('simPEG_data/freqs.npy', freqs)
-np.save('simPEG_data/rx_locs.npy', rx_locs)
+np.save('simPEG_data/fields/dpred.npy', data)
+np.save('simPEG_data/fields/freqs.npy', freqs)
+np.save('simPEG_data/fields/rx_locs.npy', rx_locs)
+
+f = sim.fields(conductivity_model)
+fields = {'e': f[:, 'e'], 'b':f[:, 'h'], 'h':f[:, 'h'], 'j':f[:, 'j']}
+np.save('simPEG_data/fields/fields.npy', fields, allow_pickle=True)
+
+save_mesh = mesh.serialize()
+np.save('simPEG_data/fields/mesh.npy', save_mesh, allow_pickle=True)
+
+np.savez(
+    'simPEG_data/fields/model_fields.npz',
+    dpred=data,
+    freqs=freqs,
+    rx_locs=rx_locs,
+    fields=fields,
+    mesh=save_mesh
+)
