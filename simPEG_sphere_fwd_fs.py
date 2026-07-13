@@ -82,17 +82,25 @@ mesh.refine_box(
 
 # Finer refinement within the rxs area
 mesh.refine_box(
-    [-5000, -5000, -2000],
-    [5000, 5000, 0],
+    [-10000, -10000, -2000],
+    [10000, 10000, 0],
     levels=10,
     finalize=False
 )
 
 # Finer refinement around the rxs surface
 mesh.refine_box(
-    [-5000, -5000, -50],
-    [5000, 5000, 0],
+    [-10000, -10000, -50],
+    [10000, 10000, 0],
     levels=-4,
+    finalize=False
+)
+
+# Testing refinement around the rxs surface
+mesh.refine_box(
+    [-1000, -1000, -50],
+    [1000, 1000, 0],
+    levels=-3,
     finalize=False
 )
 
@@ -199,7 +207,7 @@ for f in freqs_red: # running on reduced freqs
     rx_list.append(nsem.receivers.Impedance(locations_e=rx_locs, locations_h=rx_locs, orientation='yx', component='imag'))
     rx_list.append(nsem.receivers.Impedance(locations_e=rx_locs, locations_h=rx_locs, orientation='yx', component='apparent_resistivity'))
     rx_list.append(nsem.receivers.Impedance(locations_e=rx_locs, locations_h=rx_locs, orientation='yx', component='phase'))
-    source_list.append(nsem.sources.FictitiousSource(rx_list, frequency=f))
+    source_list.append(nsem.sources.PlanewaveXYPrimary(rx_list, frequency=f, sigma_primary=background_model))
 
 survey = nsem.survey.Survey(source_list)
 
@@ -212,11 +220,11 @@ mesh_1d = TensorMesh([hz], origin=np.array([mesh.origin[-1]]))
 sigma_1d = sigma_air * np.ones(mesh_1d.n_cells)
 sigma_1d[mesh_1d.cell_centers < 0.] = background_conductivity
 
-sim = nsem.simulation.Simulation3DElectricFieldFictitious(
+sim = nsem.simulation.Simulation3DPrimarySecondary(
     mesh,
     survey=survey,
     sigmaMap=maps.IdentityMap(mesh),
-    sigma_background=sigma_1d,
+    sigmaPrimary=background_conductivity,
     forward_only=True,
     solver=Pardiso
 )

@@ -1,6 +1,7 @@
 # Code by Rylan Stutters - github.com/RylanDS7
 
 import numpy as np
+import scipy.constants
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import discretize
@@ -56,7 +57,9 @@ for ax, Ec, title in panels:
     ax.set_ylabel('y (m)')
     ax.set_aspect('equal')
     ax.set_title(title)
-    plt.colorbar(sc, ax=ax, label='E (component)')
+    cbar = plt.colorbar(sc, ax=ax, label='E (component)')
+    cbar.formatter.set_useOffset(False)
+    cbar.update_normal()
 
 fig.suptitle('E-field scalar maps at z=0, f=100 Hz', fontsize=14)
 plt.tight_layout()
@@ -112,6 +115,7 @@ for ax, Hc, title in panels:
 
 fig.suptitle('H-field scalar maps at z=0, f=100 Hz', fontsize=14)
 plt.tight_layout()
+plt.show()
 
 
 H_avgs = {}
@@ -127,4 +131,11 @@ print(f"H_y Phase: {180 / np.pi * np.arctan(H_avgs['H_y — imag'] / H_avgs['H_y
 print(f"\nPhase Difference: {180 + 180 / np.pi * np.arctan(E_avgs['E_y — imag'] / E_avgs['E_y — real']) - 180 / np.pi * np.arctan(H_avgs['H_y — imag'] / H_avgs['H_y — real'])}")
 
 print(f"\nRe(E_x)*Re(H_y) + Im(E_x)*Im(H_y): {E_avgs['E_x — real'] * H_avgs['H_y — real'] + E_avgs['E_x — imag'] * H_avgs['H_y — imag']}")
-print(f"\nRe(H_y)*Im(E_x) - Re(E_x)*Im(H_y): {H_avgs['H_y — real'] * E_avgs['E_x — imag'] - E_avgs['E_x — real'] * H_avgs['H_y — imag']}")
+print(f"Re(H_y)*Im(E_x) - Re(E_x)*Im(H_y): {H_avgs['H_y — real'] * E_avgs['E_x — imag'] - E_avgs['E_x — real'] * H_avgs['H_y — imag']}")
+
+mag_Ex = np.sqrt(E_avgs['E_x — real']**2 + E_avgs['E_x — imag']**2)
+mag_Hy = np.sqrt(H_avgs['H_y — real']**2 + H_avgs['H_y — imag']**2)
+print(f"\nSimulated E_x Magnitude: {mag_Ex}")
+print(f"Simulated H_y Magnitude: {mag_Hy}")
+print(f"Simulated Z_xy Magnitude: {mag_Ex / mag_Hy}")
+print(f"Predicted Z_xy Magnitude: {np.sqrt((100 * 2 * np.pi * scipy.constants.mu_0) / (0.001))}")
