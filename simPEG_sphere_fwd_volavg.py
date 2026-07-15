@@ -157,7 +157,7 @@ mesh.refine_ball(
 refine_pts = np.zeros((len(rx_locs), 3))
 for i, pt in enumerate(rx_locs):
     refine_pts[i] = [pt[0], pt[1], 0]
-mesh.refine_points(refine_pts, padding_cells_by_level=[6, 2, 2], finalize=False)
+mesh.refine_points(refine_pts, padding_cells_by_level=[3, 2, 2], finalize=False)
 
 mesh.finalize()
 

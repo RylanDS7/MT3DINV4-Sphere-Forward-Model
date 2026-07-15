@@ -4,8 +4,8 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
-run_num = "009"
-data_path = f"simPEG_data/tradeoff_vol_avg/"
+run_num = "010"
+data_path = f"simPEG_data/{run_num}/"
 analytic_path = "analytic_data/"
 
 # load and parse analytic data
@@ -25,11 +25,11 @@ Adata[:, :, :, 2] = appresA[:, :, :, 0, 1] # rho_xy in simpeg convention
 Adata[:, :, :, 3] = phaseA[:, :, :, 0, 1] # phase_xy in simpeg convention
 
 # load and parse simPEG data
-dpred = np.load(data_path+'dpred53.npy')
-freqs = np.load(data_path+'freqs.npy')
-rx_locs = np.load(data_path+'rx_locs.npy')
+dpred = np.load(data_path+'dpredVA.npy')
+freqs = np.load(data_path+'freqsVA.npy')
+rx_locs = np.load(data_path+'rx_locsVA.npy')
 
-data = dpred
+data = dpred.reshape(len(freqs), 8, len(rx_locs))
 data[:, 3, :] += 180 # app resistivity phase quadrant correction
 data[:, 0, :] = -data[:, 0, :]
 data[:, 1, :] = -data[:, 1, :]
@@ -232,14 +232,36 @@ plt.savefig(f"figure_out/{run_num}/yxResiduals.png")
 
 plt.figure()
 
-plt.plot(freqs[0:70:10], 100*(data[0:70:10, 0, 1012]-Adata[0:70:10, 22, 22, 0])/Adata[0:70:10, 22, 22, 0], '.-', label="Real Impedance xy")
-plt.plot(freqs[0:70:10], 100*(data[0:70:10, 1, 1012]-Adata[0:70:10, 22, 22, 1])/Adata[0:70:10, 22, 22, 1], '.-', label="Imag Impedance xy")
-plt.plot(freqs[0:70:10], 100*(data[0:70:10, 4, 1012]-Adata[0:70:10, 22, 22, 4])/Adata[0:70:10, 22, 22, 4], '.-', label="Real Impedance yx")
-plt.plot(freqs[0:70:10], 100*(data[0:70:10, 5, 1012]-Adata[0:70:10, 22, 22, 5])/Adata[0:70:10, 22, 22, 5], '.-', label="Imag Impedance yx")
+plt.plot(freqs, 100*(data[:, 0, 1012]-Adata[:, 22, 22, 0])/Adata[:, 22, 22, 0], '.', label="Real Impedance xy")
+plt.plot(freqs, 100*(data[:, 1, 1012]-Adata[:, 22, 22, 1])/Adata[:, 22, 22, 1], '.', label="Imag Impedance xy")
+plt.plot(freqs, 100*(data[:, 4, 1012]-Adata[:, 22, 22, 4])/Adata[:, 22, 22, 4], '.', label="Real Impedance yx")
+plt.plot(freqs, 100*(data[:, 5, 1012]-Adata[:, 22, 22, 5])/Adata[:, 22, 22, 5], '.', label="Imag Impedance yx")
 
 plt.xscale('log')
+plt.xlabel('Frequency (Hz)')
+plt.ylabel('Impedance Percent Residuals')
+plt.title('Impedance Residuals at (x,y) = (0,0)')
 plt.legend()
 plt.savefig(f"figure_out/{run_num}/centerFreqResiduals.png")
+
+
+# ======================
+# Plot edge residuals at all freqs
+# ======================
+
+plt.figure()
+
+plt.plot(freqs, 100*(data[:, 0, 22]-Adata[:, 0, 22, 0])/Adata[:, 0, 22, 0], '.', label="Real Impedance xy")
+plt.plot(freqs, 100*(data[:, 1, 22]-Adata[:, 0, 22, 1])/Adata[:, 0, 22, 1], '.', label="Imag Impedance xy")
+plt.plot(freqs, 100*(data[:, 4, 22]-Adata[:, 0, 22, 4])/Adata[:, 0, 22, 4], '.', label="Real Impedance yx")
+plt.plot(freqs, 100*(data[:, 5, 22]-Adata[:, 0, 22, 5])/Adata[:, 0, 22, 5], '.', label="Imag Impedance yx")
+
+plt.xscale('log')
+plt.xlabel('Frequency (Hz)')
+plt.ylabel('Impedance Percent Residuals')
+plt.title('Impedance Residuals at (x,y) = (-5000,0)')
+plt.legend()
+plt.savefig(f"figure_out/{run_num}/edgeFreqResiduals.png")
 
 
 # ======================
