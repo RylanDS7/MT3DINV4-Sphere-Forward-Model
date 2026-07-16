@@ -268,16 +268,25 @@ for freq in plot_freqs_ind:
     axes[1].plot(refine_levels, real_xy_edge, 'o-', label=f"Real {freqs[freq]}Hz")
     axes[1].plot(refine_levels, imag_xy_edge, 'o-', label=f"Imag {freqs[freq]}Hz")
 
-    axes[0].set_title("Impedance xy at x=0, y=0", fontsize=24)
-    axes[0].set_ylabel('Percent Residuals', fontsize=20)
-    axes[0].tick_params(axis='both', labelsize=16) 
-    axes[0].grid()
-    axes[1].set_title("Impedance xy at x=-5000, y=0", fontsize=24)
-    axes[1].set_xlabel('Sphere Refinement (m)', fontsize=20)
-    axes[1].set_ylabel('Percent Residuals', fontsize=20)
-    axes[1].tick_params(axis='both', labelsize=16)
-    axes[1].legend(fontsize=15)
-    axes[1].grid()
+axes[0].set_ylabel('Percent Residuals', fontsize=20)
+axes[0].tick_params(axis='both', labelsize=16) 
+axes[0].grid()
+axes[0].set_title('Varying Sphere for Fixed Receiver at 10m', fontsize=22)
+axes[1].set_xlabel('Sphere Refinement (m)', fontsize=20)
+axes[1].set_ylabel('Percent Residuals', fontsize=20)
+axes[1].tick_params(axis='both', labelsize=16)
+axes[1].legend(fontsize=15)
+axes[1].grid()
+
+box = dict(
+    boxstyle='square',
+    edgecolor='black',
+    fill=False,
+    linewidth=1.5
+)
+
+axes[0].text(60, 0.7, "(x,y) = (0,0)", fontsize=16, bbox=box)
+axes[1].text(60, 8.8, "(x,y) = (-5000,0)", fontsize=16, bbox=box)
 
 plt.xticks([2.5, 10, 20, 40, 80], fontsize=16)
 plt.tight_layout()

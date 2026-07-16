@@ -97,3 +97,42 @@ plt.xlabel('Frequency (Hz)')
 plt.ylabel('Computation Time (min)')
 plt.title('Computation Times per Frequency')
 plt.savefig(f"figure_out/{run_num}/freqTimes.png")
+
+
+# ======================
+# Calculate total residuals
+# ======================
+
+data_grid = data.reshape(len(freqs), 8, 45, 45)
+
+residuals_real_xy = 100*(data_grid[:, 0, :, :]-Adata[:, :, :, 0])/Adata[:, :, :, 0]
+residuals_imag_xy = 100*(data_grid[:, 1, :, :]-Adata[:, :, :, 1])/Adata[:, :, :, 1]
+residuals_real_yx = 100*(data_grid[:, 4, :, :]-Adata[:, :, :, 4])/Adata[:, :, :, 4]
+residuals_imag_yx = 100*(data_grid[:, 5, :, :]-Adata[:, :, :, 5])/Adata[:, :, :, 5]
+
+mean_real_xy = []
+mean_imag_xy = []
+mean_real_yx = []
+mean_imag_yx = []
+for i in np.arange(71):
+    mean_real_xy.append(np.mean(np.vstack(residuals_real_xy[i])))
+    mean_imag_xy.append(np.mean(np.vstack(residuals_imag_xy[i])))
+    mean_real_yx.append(np.mean(np.vstack(residuals_real_yx[i])))
+    mean_imag_yx.append(np.mean(np.vstack(residuals_imag_yx[i])))
+
+plt.figure()
+
+plt.plot(freqs, mean_real_xy, '.', label="Real Impedance xy")
+plt.plot(freqs, mean_imag_xy, '.', label="Imag Impedance xy")
+plt.plot(freqs, mean_real_yx, '.', label="Real Impedance yx")
+plt.plot(freqs, mean_imag_yx, '.', label="Imag Impedance yx")
+
+all_mean = np.concatenate((mean_real_xy, mean_imag_xy, mean_real_yx, mean_imag_yx))
+print(f"Mean of Absolute Value Mean Errors: {np.mean(np.abs(all_mean))}")
+
+plt.xscale('log')
+plt.xlabel('Frequency (Hz)')
+plt.ylabel('Mean Impedance Percent Residuals')
+plt.title('Mean Impedance Residuals for all Receivers')
+plt.legend()
+plt.savefig(f"figure_out/{run_num}/meanFreqResiduals.png")
