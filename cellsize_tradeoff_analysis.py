@@ -127,24 +127,27 @@ plt.savefig(f"figure_out/cellsize_tradeoff/centerResidualsTime.png")
 # Center residuals vs cells, all freqs
 # ======================
 
-plt.figure()
+plt.figure(figsize=(7, 7))
 
 NAresiduals_real = np.array([100*(NAdata[:, f, 0, 1012]-Adata[f, 22, 22, 0])/Adata[f, 22, 22, 0] for f in np.arange(71)])
 NAresiduals_imag = np.array([100*(NAdata[:, f, 1, 1012]-Adata[f, 22, 22, 1])/Adata[f, 22, 22, 1] for f in np.arange(71)])
 VAresiduals_real = np.array([100*(VAdata[:, f, 0, 1012]-Adata[f, 22, 22, 0])/Adata[f, 22, 22, 0] for f in np.arange(71)])
 VAresiduals_imag = np.array([100*(VAdata[:, f, 1, 1012]-Adata[f, 22, 22, 1])/Adata[f, 22, 22, 1] for f in np.arange(71)])
 
-plt.scatter(NAcells/100000, np.mean(np.abs(NAresiduals_real), axis=0), label='Real Normal Procedure', marker='x')
-plt.scatter(NAcells/100000, np.mean(np.abs(NAresiduals_imag), axis=0), label='Imag Normal Procedure', marker='x')
-plt.scatter(VAcells/100000, np.mean(np.abs(VAresiduals_real), axis=0), label='Real Harmonic Averaged', marker='o')
-plt.scatter(VAcells/100000, np.mean(np.abs(VAresiduals_imag), axis=0), label='Imag Harmonic Averaged', marker='o')
+plt.scatter(NAcells, np.mean(np.abs(NAresiduals_real), axis=0), label='Real Normal Procedure', marker='x', s=100)
+plt.scatter(NAcells, np.mean(np.abs(NAresiduals_imag), axis=0), label='Imag Normal Procedure', marker='x', s=100)
+plt.scatter(VAcells, np.mean(np.abs(VAresiduals_real), axis=0), label='Real Harmonic Averaged', marker='o', s=100)
+plt.scatter(VAcells, np.mean(np.abs(VAresiduals_imag), axis=0), label='Imag Harmonic Averaged', marker='o', s=100)
 
-plt.xlabel('Cell Count (/100000)')
-plt.ylabel('Abs Impedance Percent Residuals')
-plt.title('Impedance Residuals at (x,y) = (0,0) vs Cell Count, Averaged Across Freq')
-plt.legend()
+plt.xlabel('Cell Count', fontsize=20)
+plt.ylabel('Abs Impedance Percent Residuals', fontsize=20)
+plt.tick_params(axis='both', labelsize=16) 
+plt.ticklabel_format(axis='x', style='sci', scilimits=(0,0), useMathText=True)
+plt.gca().xaxis.get_offset_text().set_fontsize(16) 
+plt.title('Impedance Residuals at (x,y) = (0,0)\nvs Cell Count, Averaged Across Freq', fontsize=22)
+plt.legend(fontsize=15)
 plt.grid()
-plt.savefig(f"figure_out/cellsize_tradeoff/centerResidualsCells.png")
+plt.savefig(f"figure_out/cellsize_tradeoff/centerResidualsCells.png", bbox_inches='tight')
 
 
 # ======================

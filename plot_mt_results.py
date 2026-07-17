@@ -15,8 +15,8 @@ appresA = np.load(analytic_path+'appres.npy')
 impA = np.load(analytic_path+'imp.npy')
 phaseA = np.load(analytic_path+'phase.npy')
 
-Adata[:, :, :, 4] = -impA[:, :, :, 1, 0].real # impedence_yx in simpeg convention
-Adata[:, :, :, 5] = -impA[:, :, :, 1, 0].imag # impedence_yx in simpeg convention
+Adata[:, :, :, 4] = impA[:, :, :, 1, 0].real # impedence_yx in simpeg convention
+Adata[:, :, :, 5] = impA[:, :, :, 1, 0].imag # impedence_yx in simpeg convention
 Adata[:, :, :, 6] = appresA[:, :, :, 1, 0] # rho_yx in simpeg convention
 Adata[:, :, :, 7] = phaseA[:, :, :, 1, 0] + 180 # phase_yx in simpeg convention
 Adata[:, :, :, 0] = impA[:, :, :, 0, 1].real # impedence_xy in simpeg convention       
@@ -33,6 +33,8 @@ data = dpred.reshape(len(freqs), 8, len(rx_locs))
 data[:, 3, :] += 180 # app resistivity phase quadrant correction
 data[:, 0, :] = -data[:, 0, :]
 data[:, 1, :] = -data[:, 1, :]
+data[:, 4, :] = -data[:, 4, :]
+data[:, 5, :] = -data[:, 5, :]
 
 plot_freqs_ind = [0, 10, 20, 30, 40, 50, 60] # plot 1 freq per decade
 
