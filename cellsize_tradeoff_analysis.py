@@ -127,7 +127,7 @@ plt.savefig(f"figure_out/cellsize_tradeoff/centerResidualsTime.png")
 # Center residuals vs cells, all freqs
 # ======================
 
-plt.figure(figsize=(7, 7))
+plt.figure(figsize=(8, 6))
 
 NAresiduals_real = np.array([100*(NAdata[:, f, 0, 1012]-Adata[f, 22, 22, 0])/Adata[f, 22, 22, 0] for f in np.arange(71)])
 NAresiduals_imag = np.array([100*(NAdata[:, f, 1, 1012]-Adata[f, 22, 22, 1])/Adata[f, 22, 22, 1] for f in np.arange(71)])
