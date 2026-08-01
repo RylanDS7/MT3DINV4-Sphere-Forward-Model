@@ -51,6 +51,47 @@ pdf = PdfPages("figure_out/tradeoff3.pdf")
 
 
 # ======================
+# Apparent resisitivty and phase plots for individual freqs
+# ======================
+
+labels = ['Real Impedance xy', 'Imag Impedance xy', 'App Res xy', 'Phase xy', 'Real Impedance yx', 'Imag Impedance yx', 'App Res yx', 'Phase yx']
+
+for run in run_data.keys():
+    data = run_data[run]
+    for j in plot_freqs_ind:
+        fig, axes = plt.subplots(2, 4, figsize=(20, 14), sharex=True)
+        axes = axes.flatten()
+
+        for i, (ax, label) in enumerate(zip(axes, labels)):
+            if i % 4 == 2: # Apparent resistivity plotting
+                ax.plot(x_cut, data[j, i, 22::45], '.-', label="Simulated")
+                ax.plot(x_cut, Adata[j, :, 22, i], '.-', label="Analytic")
+                ax.set_ylabel('App Res (Ωm)')
+                ax.plot(x_cut, data[j, i, 22::45]-Adata[j, :, 22, i], '.-', label="Residual: Sim - Analytic")
+            elif i % 4 == 3: # Phase plotting
+                ax.plot(x_cut, data[j, i, 22::45], '.-', label="Simulated")
+                ax.plot(x_cut, Adata[j, :, 22, i], '.-', label="Analytic")
+                ax.set_ylabel('Phase (Degrees)')
+            elif i % 4 == 0: # Real Impedance plotting
+                ax.plot(x_cut, data[j, i, 22::45], '.-', label="Simulated")
+                ax.plot(x_cut, Adata[j, :, 22, i], '.-', label="Analytic")
+                ax.set_ylabel('Real Impedance (Ω)')
+            else: # Imag Impedance plotting
+                ax.plot(x_cut, data[j, i, 22::45], '.-', label="Simulated")
+                ax.plot(x_cut, Adata[j, :, 22, i], '.-', label="Analytic")
+                ax.set_ylabel('Imag Impedance (Ω)')
+
+            ax.set_title(label)
+            ax.set_xlabel('Easting (m)')
+            ax.grid(True, which='both', alpha=0.3)
+            ax.legend(loc='lower left')
+
+        plt.suptitle(f'Apparent Resistivity, Phase, and Impedance along Cut at y=0 for {freqs[j]}Hz, Run Number {run}')
+        plt.tight_layout()
+        pdf.savefig(fig)
+
+
+# ======================
 # Impedence residuals at center sphere
 # ======================
 

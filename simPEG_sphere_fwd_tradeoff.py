@@ -187,46 +187,55 @@ def main(sphere_levels, rx_levels):
     earth_inds = mesh.cell_centers[:,2] < 0
     conductivity_model[earth_inds] = background_conductivity
 
-    volume_average_sphere(
+    # volume_average_sphere(
+    #     center=[0,0,-1000],
+    #     radius=500,
+    #     mesh=mesh,
+    #     sphere_sigma=sphere_conductivity,
+    #     background_sigma=background_conductivity,
+    #     model=conductivity_model
+    # )
+
+    sphere_indices = model_builder.get_indices_sphere(
         center=[0,0,-1000],
         radius=500,
-        mesh=mesh,
-        sphere_sigma=sphere_conductivity,
-        background_sigma=background_conductivity,
-        model=conductivity_model
+        cell_centers=mesh.cell_centers
     )
+
+    conductivity_model[sphere_indices] = sphere_conductivity
 
     background_model = sigma_air * np.ones(mesh.nC)
     background_model[earth_inds] = background_conductivity
 
     # CHECKPOINT
-    # fig = plt.figure(figsize=(20, 12))
-    # ax1 = fig.add_axes([0.1, 0.1, 0.8, 0.8])
-    # out = mesh.plot_slice(
-    #     conductivity_model,
-    #     ax=ax1,
-    #     normal="Y",
-    #     ind=int(len(mesh.h[1]) / 2),
-    #     grid=True,
-    #     grid_opts={
-    #         "color": "black", 
-    #         "linewidth": 0.5,
-    #         "alpha": 0.3
-    #     },
-    #     pcolor_opts={
-    #         "cmap": "viridis",
-    #         "norm": LogNorm(vmin=1e-8, vmax=10)
-    #     }
-    # )
+    fig = plt.figure(figsize=(12, 12)) 
+    ax1 = fig.add_axes([0.1, 0.1, 0.8, 0.8])
+    out = mesh.plot_slice(
+        conductivity_model,
+        ax=ax1,
+        normal="Y",
+        ind=int(len(mesh.h[1]) / 2),
+        grid=True,
+        grid_opts={
+            "color": "black", 
+            "linewidth": 0.5,
+            "alpha": 0.3
+        },
+        pcolor_opts={
+            "cmap": "viridis",
+            "norm": LogNorm(vmin=1e-8, vmax=10)
+        }
+    )
 
-    # cb = plt.colorbar(out[0], ax=ax1, orientation='vertical')
-    # cb.set_label('Conductivity (S/m)')
+    cb = plt.colorbar(out[0], ax=ax1, orientation='vertical')
+    cb.set_label('Conductivity (S/m)')
 
     # plot a zoomed in cross section
-    # ax1.set_xlim([rx_locs[:, 0].min()/3, rx_locs[:, 0].max()/3])
-    # ax1.set_ylim([-2000, 200]) # zoom in around the sphere
-    # plt.title(f"Conductivity Model Cross Section at y=0, {mesh.nC} cells")
-    # plt.show()
+    ax1.set_xlim([-1200, 1200])
+    ax1.set_ylim([-2000, 200]) # zoom in around the sphere
+    ax1.set_aspect('equal') 
+    plt.title(f"")
+    plt.show()
 
     # ======================================
     # SETUP FREQUENCIES AND SURVEY
@@ -246,67 +255,67 @@ def main(sphere_levels, rx_levels):
     # Data structued as freq x dataType x rx
     source_list = []
 
-    for f in freqs_red: # running on reduced freqs
-        rx_list = []
-        rx_list.append(nsem.receivers.Impedance(locations_e=rx_locs, locations_h=rx_locs, orientation='xy', component='real'))
-        rx_list.append(nsem.receivers.Impedance(locations_e=rx_locs, locations_h=rx_locs, orientation='xy', component='imag'))
-        rx_list.append(nsem.receivers.Impedance(locations_e=rx_locs, locations_h=rx_locs, orientation='xy', component='apparent_resistivity'))
-        rx_list.append(nsem.receivers.Impedance(locations_e=rx_locs, locations_h=rx_locs, orientation='xy', component='phase'))
-        rx_list.append(nsem.receivers.Impedance(locations_e=rx_locs, locations_h=rx_locs, orientation='yx', component='real'))
-        rx_list.append(nsem.receivers.Impedance(locations_e=rx_locs, locations_h=rx_locs, orientation='yx', component='imag'))
-        rx_list.append(nsem.receivers.Impedance(locations_e=rx_locs, locations_h=rx_locs, orientation='yx', component='apparent_resistivity'))
-        rx_list.append(nsem.receivers.Impedance(locations_e=rx_locs, locations_h=rx_locs, orientation='yx', component='phase'))
-        source_list.append(nsem.sources.FictitiousSource(rx_list, frequency=f))
+    # for f in freqs_red: # running on reduced freqs
+    #     rx_list = []
+    #     rx_list.append(nsem.receivers.Impedance(locations_e=rx_locs, locations_h=rx_locs, orientation='xy', component='real'))
+    #     rx_list.append(nsem.receivers.Impedance(locations_e=rx_locs, locations_h=rx_locs, orientation='xy', component='imag'))
+    #     rx_list.append(nsem.receivers.Impedance(locations_e=rx_locs, locations_h=rx_locs, orientation='xy', component='apparent_resistivity'))
+    #     rx_list.append(nsem.receivers.Impedance(locations_e=rx_locs, locations_h=rx_locs, orientation='xy', component='phase'))
+    #     rx_list.append(nsem.receivers.Impedance(locations_e=rx_locs, locations_h=rx_locs, orientation='yx', component='real'))
+    #     rx_list.append(nsem.receivers.Impedance(locations_e=rx_locs, locations_h=rx_locs, orientation='yx', component='imag'))
+    #     rx_list.append(nsem.receivers.Impedance(locations_e=rx_locs, locations_h=rx_locs, orientation='yx', component='apparent_resistivity'))
+    #     rx_list.append(nsem.receivers.Impedance(locations_e=rx_locs, locations_h=rx_locs, orientation='yx', component='phase'))
+    #     source_list.append(nsem.sources.FictitiousSource(rx_list, frequency=f))
 
-    survey = nsem.survey.Survey(source_list)
-
-
-    # ======================================
-    # SETUP SIMULATION
-    # ======================================
-
-    mesh_1d = TensorMesh([hz], origin=np.array([mesh.origin[-1]]))
-    sigma_1d = sigma_air * np.ones(mesh_1d.n_cells)
-    sigma_1d[mesh_1d.cell_centers < 0.] = background_conductivity
-
-    sim = nsem.simulation.Simulation3DElectricFieldFictitious(
-        mesh,
-        survey=survey,
-        sigmaMap=maps.IdentityMap(mesh),
-        sigma_background=sigma_1d,
-        forward_only=True,
-        solver=Pardiso
-    )
+    # survey = nsem.survey.Survey(source_list)
 
 
-    # ======================================
-    # RUN SIMULATION AND SAVE RESULTS
-    # ======================================
+    # # ======================================
+    # # SETUP SIMULATION
+    # # ======================================
 
-    print(f"{run_num} Running Forward Simulation")
-    start_time = time.time()
-    dpred = sim.dpred(conductivity_model)
-    end_time = time.time()
-    sim_time = end_time - start_time
-    print(f"{run_num} Finished Forward Simulation in {sim_time:.4f} seconds")
-    print(f"{run_num} Expected data shape: {len(freqs_red)} x {len(rx_locs)} x 8 = {len(freqs_red) * len(rx_locs) * 8}") # for reduced freqs
-    print(f"{run_num} Survey data shape:", dpred.shape)
+    # mesh_1d = TensorMesh([hz], origin=np.array([mesh.origin[-1]]))
+    # sigma_1d = sigma_air * np.ones(mesh_1d.n_cells)
+    # sigma_1d[mesh_1d.cell_centers < 0.] = background_conductivity
 
-    data = np.zeros([len(freqs), 8, rx_locs.shape[0]])
+    # sim = nsem.simulation.Simulation3DElectricFieldFictitious(
+    #     mesh,
+    #     survey=survey,
+    #     sigmaMap=maps.IdentityMap(mesh),
+    #     sigma_background=sigma_1d,
+    #     forward_only=True,
+    #     solver=Pardiso
+    # )
 
-    # processing reduced freqs
-    data_red = dpred.reshape(len(freqs_red), 8, rx_locs.shape[0]) 
-    for i, f in enumerate(freqs):
-        if f in freqs_red:
-            red_ind = np.where(freqs_red == f)[0][0] 
-            data[i, :, :] = data_red[red_ind, :, :]
+
+    # # ======================================
+    # # RUN SIMULATION AND SAVE RESULTS
+    # # ======================================
+
+    # print(f"{run_num} Running Forward Simulation")
+    # start_time = time.time()
+    # dpred = sim.dpred(conductivity_model)
+    # end_time = time.time()
+    # sim_time = end_time - start_time
+    # print(f"{run_num} Finished Forward Simulation in {sim_time:.4f} seconds")
+    # print(f"{run_num} Expected data shape: {len(freqs_red)} x {len(rx_locs)} x 8 = {len(freqs_red) * len(rx_locs) * 8}") # for reduced freqs
+    # print(f"{run_num} Survey data shape:", dpred.shape)
+
+    # data = np.zeros([len(freqs), 8, rx_locs.shape[0]])
+
+    # # processing reduced freqs
+    # data_red = dpred.reshape(len(freqs_red), 8, rx_locs.shape[0]) 
+    # for i, f in enumerate(freqs):
+    #     if f in freqs_red:
+    #         red_ind = np.where(freqs_red == f)[0][0] 
+    #         data[i, :, :] = data_red[red_ind, :, :]
 
     
-    outdir = "/scratch/rstutter"
+    # outdir = "/scratch/rstutter"
 
-    np.save(f'{outdir}/dpred{run_num}.npy', data)
-    np.save(f'{outdir}/freqs{run_num}.npy', freqs)
-    np.save(f'{outdir}/rx_locs{run_num}.npy', rx_locs)
+    # np.save(f'{outdir}/dpred{run_num}.npy', data)
+    # np.save(f'{outdir}/freqs{run_num}.npy', freqs)
+    # np.save(f'{outdir}/rx_locs{run_num}.npy', rx_locs)
 
 
 
