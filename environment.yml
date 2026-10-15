@@ -1,8 +1,8 @@
-name: simpeg-mt-env
+name: simpeg-mt-fwd
 channels:
   - conda-forge
 dependencies:
-  - python=3.11
+  - python
 
   # Core scientific stack
   - numpy
@@ -20,14 +20,3 @@ dependencies:
 
   # Utilities
   - utm
-
-  # Optional but useful
-  - jupyterlab
-  - ipython
-
-  # Metadata handling
-  - pip
-  - pip:
-      - mtpy
-      - mtpy-v2
-      - mt-metadata

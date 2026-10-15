@@ -25,8 +25,8 @@ Adata[:, :, :, 2] = impA[:, :, :, 0, 1].real # impedance_xy
 Adata[:, :, :, 3] = impA[:, :, :, 0, 1].imag # impedance_xy
 Adata[:, :, :, 4] = impA[:, :, :, 1, 0].real # impedence_yx       
 Adata[:, :, :, 5] = impA[:, :, :, 1, 0].imag # impedence_yx         
-Adata[:, :, :, 6] = impA[:, :, :, 0, 0].real # impedance_yy
-Adata[:, :, :, 7] = impA[:, :, :, 0, 0].imag # impedance_yy
+Adata[:, :, :, 6] = impA[:, :, :, 1, 1].real # impedance_yy
+Adata[:, :, :, 7] = impA[:, :, :, 1, 1].imag # impedance_yy
 
 Adata[:, :, :, 8] = impA[:, :, :, 2, 0].real # tipper_zx       
 Adata[:, :, :, 9] = impA[:, :, :, 2, 0].imag # tipper_zx          
@@ -38,7 +38,28 @@ dpred = np.load(data_path+'dpredVA.npy')
 freqs = np.load(data_path+'freqsVA.npy')
 rx_locs = np.load(data_path+'rx_locsVA.npy')
 
-data = -dpred.reshape(len(freqs), 12, len(rx_locs)) # sign flip for convention change
+# data = -dpred.reshape(len(freqs), 12, len(rx_locs)) # sign flip for convention change
+
+dpred = dpred.reshape(len(freqs), 12, len(rx_locs))
+data = np.zeros_like(dpred)
+
+data[:, 0, :] = dpred[:, 6, :] # Zxx -> Zyy
+data[:, 1, :] = dpred[:, 7, :]
+
+data[:, 2, :] = dpred[:, 4, :] # Zxy -> Zyx
+data[:, 3, :] = dpred[:, 5, :]
+
+data[:, 4, :] = dpred[:, 2, :] # Zyx -> Zxy
+data[:, 5, :] = dpred[:, 3, :]
+
+data[:, 6, :] = dpred[:, 0, :] # Zyy -> Zxx
+data[:, 7, :] = dpred[:, 1, :]
+
+data[:, 8, :] = dpred[:, 10, :] # Tzx -> -Tzy
+data[:, 9, :] = dpred[:, 11, :]
+
+data[:, 10, :] = dpred[:, 8, :] # Tzy -> -Tzx
+data[:, 11, :] = dpred[:, 9, :]
 
 x_cut = rx_locs[990:1035, 1] # cut along x=0
 
@@ -58,11 +79,11 @@ for j in plot_freqs_ind:
     for i, (ax, label) in enumerate(zip(axes, labels)):
         if i % 2 == 0: # Real Impedance plotting
             ax.plot(x_cut, data[j, i, 990:1035], '.-', label="Simulated")
-            ax.plot(x_cut, Adata[j, 22, :, i], '.-', label="Analytic")
+            ax.plot(x_cut, Adata[j, :, 22, i], '.-', label="Analytic")
             ax.set_ylabel('Real Impedance (Ω)')
         else: # Imag Impedance plotting
             ax.plot(x_cut, data[j, i, 990:1035], '.-', label="Simulated")
-            ax.plot(x_cut, Adata[j, 22, :, i], '.-', label="Analytic")
+            ax.plot(x_cut, Adata[j, :, 22, i], '.-', label="Analytic")
             ax.set_ylabel('Imag Impedance (Ω)')
 
         ax.set_title(label)
@@ -70,7 +91,7 @@ for j in plot_freqs_ind:
         ax.grid(True, which='both', alpha=0.3)
         ax.legend(loc='lower left')
 
-    plt.suptitle(f'Impedance along Cut at x=0 for {freqs[j]}Hz')
+    plt.suptitle(f'Impedance along Cut at y=0 for {freqs[j]}Hz')
     plt.tight_layout()
     plt.savefig(f"figure_out/final_plots/compare{freqs[j]}Hz.png")
 
@@ -87,19 +108,19 @@ for j in plot_freqs_ind:
     axes = axes.flatten()
 
     axes[0].plot(x_cut, np.abs(data[j, 2, 990:1035] + data[j, 3, 990:1035]*1j)**2 / (mu0 * 2 * np.pi * freqs[j]), '.-', label="Simulated")
-    axes[0].plot(x_cut, np.abs(Adata[j, 22, :, 2] + Adata[j, 22, :, 3]*1j)**2 / (mu0 * 2 * np.pi * freqs[j]), '.-', label="Analytic")
+    axes[0].plot(x_cut, np.abs(Adata[j, :, 22, 2] + Adata[j, :, 22, 3]*1j)**2 / (mu0 * 2 * np.pi * freqs[j]), '.-', label="Analytic")
     axes[0].set_title(labels[0])
 
     axes[1].plot(x_cut, np.angle(data[j, 2, 990:1035] + data[j, 3, 990:1035]*1j, deg=True), '.-', label="Simulated")
-    axes[1].plot(x_cut, np.angle(Adata[j, 22, :, 2] + Adata[j, 22, :, 3]*1j, deg=True), '.-', label="Analytic")
+    axes[1].plot(x_cut, np.angle(Adata[j, :, 22, 2] + Adata[j, :, 22, 3]*1j, deg=True), '.-', label="Analytic")
     axes[1].set_title(labels[1])
 
     axes[2].plot(x_cut, np.abs(data[j, 4, 990:1035] + data[j, 5, 990:1035]*1j)**2 / (mu0 * 2 * np.pi * freqs[j]), '.-', label="Simulated")
-    axes[2].plot(x_cut, np.abs(Adata[j, 22, :, 4] + Adata[j, 22, :, 5]*1j)**2 / (mu0 * 2 * np.pi * freqs[j]), '.-', label="Analytic")
+    axes[2].plot(x_cut, np.abs(Adata[j, :, 22, 4] + Adata[j, :, 22, 5]*1j)**2 / (mu0 * 2 * np.pi * freqs[j]), '.-', label="Analytic")
     axes[2].set_title(labels[2])
 
     axes[3].plot(x_cut, np.angle(data[j, 4, 990:1035] + data[j, 5, 990:1035]*1j, deg=True), '.-', label="Simulated")
-    axes[3].plot(x_cut, np.angle(Adata[j, 22, :, 4] + Adata[j, 22, :, 5]*1j, deg=True), '.-', label="Analytic")
+    axes[3].plot(x_cut, np.angle(Adata[j, :, 22, 4] + Adata[j, :, 22, 5]*1j, deg=True), '.-', label="Analytic")
     axes[3].set_title(labels[3])
 
     for ax in axes:
@@ -108,7 +129,7 @@ for j in plot_freqs_ind:
         ax.legend(loc='lower left')
         
 
-    plt.suptitle(f'Apparent Resisitivity and Phase along Cut at x=0 for {freqs[j]}Hz')
+    plt.suptitle(f'Apparent Resisitivity and Phase along Cut at y=0 for {freqs[j]}Hz')
     plt.tight_layout()
     plt.savefig(f"figure_out/final_plots/compareRho{freqs[j]}Hz.png")
 
@@ -214,7 +235,7 @@ for j in plot_freqs_ind:
 # Map plot of app rho difference for individual freqs
 # ======================
 
-AdataS = Adata.reshape(71, 2025, 12)
+AdataS = Adata.transpose(0, 2, 1, 3).reshape(71, 2025, 12) # xy components flipped to match simpeg dimensions
 
 for j in plot_freqs_ind:
     fig, axes = plt.subplots(1, 2, figsize=(20, 10))
