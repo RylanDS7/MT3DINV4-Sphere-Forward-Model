@@ -206,12 +206,8 @@ for j in plot_freqs_ind:
     axes[1].set_xlim(x_min, x_max)
     axes[1].set_ylim(y_min, y_max)
 
-    base_transform = axes[0].transData
-    rotation_transform = transforms.Affine2D().rotate_deg(90)
-    plot, _ = utils.plot2Ddata(rx_locs, valuesxy, ax=axes[0], nx=1000, ny=1000, clim=[vmin, vmax], contourOpts={"cmap": "gist_rainbow", "transform": rotation_transform + base_transform})
-    base_transform = axes[1].transData
-    rotation_transform = transforms.Affine2D().rotate_deg(90)
-    plot, _ = utils.plot2Ddata(rx_locs, valuesyx, ax=axes[1], nx=1000, ny=1000, clim=[vmin, vmax], contourOpts={"cmap": "gist_rainbow", "transform": rotation_transform + base_transform})
+    plot, _ = utils.plot2Ddata(rx_locs, valuesxy, ax=axes[0], nx=1000, ny=1000, clim=[vmin, vmax], contourOpts={"cmap": "gist_rainbow"})
+    plot, _ = utils.plot2Ddata(rx_locs, valuesyx, ax=axes[1], nx=1000, ny=1000, clim=[vmin, vmax], contourOpts={"cmap": "gist_rainbow"})
 
     axes[0].set_xlabel('Northing (m)')
     axes[0].set_ylabel('Easting (m)')
@@ -264,12 +260,8 @@ for j in plot_freqs_ind:
     axes[1].set_xlim(x_min, x_max)
     axes[1].set_ylim(y_min, y_max)
 
-    base_transform = axes[0].transData
-    rotation_transform = transforms.Affine2D().rotate_deg(90)
-    plot, _ = utils.plot2Ddata(rx_locs, valuesxy, ax=axes[0], nx=1000, ny=1000, clim=[vmin, vmax], contourOpts={"cmap": "bwr", "transform": rotation_transform + base_transform})
-    base_transform = axes[1].transData
-    rotation_transform = transforms.Affine2D().rotate_deg(90)
-    plot, _ = utils.plot2Ddata(rx_locs, valuesyx, ax=axes[1], nx=1000, ny=1000, clim=[vmin, vmax], contourOpts={"cmap": "bwr", "transform": rotation_transform + base_transform})
+    plot, _ = utils.plot2Ddata(rx_locs, valuesxy, ax=axes[0], nx=1000, ny=1000, clim=[vmin, vmax], contourOpts={"cmap": "bwr"})
+    plot, _ = utils.plot2Ddata(rx_locs, valuesyx, ax=axes[1], nx=1000, ny=1000, clim=[vmin, vmax], contourOpts={"cmap": "bwr"})
 
     axes[0].set_xlabel('Northing (m)')
     axes[0].set_ylabel('Easting (m)')
@@ -315,12 +307,8 @@ for j in plot_freqs_ind:
     axes[1].set_xlim(x_min, x_max)
     axes[1].set_ylim(y_min, y_max)
 
-    base_transform = axes[0].transData
-    rotation_transform = transforms.Affine2D().rotate_deg(90)
-    plot, _ = utils.plot2Ddata(rx_locs, valuesxy, nx=1000, ny=1000, ax=axes[0], ncontour=20, clim=[vmin, vmax], contourOpts={"cmap": "gist_rainbow_r", "transform": rotation_transform + base_transform})
-    base_transform = axes[1].transData
-    rotation_transform = transforms.Affine2D().rotate_deg(90)
-    plot, _ = utils.plot2Ddata(rx_locs, valuesyx, ax=axes[1], nx=1000, ny=1000, ncontour=20, clim=[vmin, vmax], contourOpts={"cmap": "gist_rainbow_r", "transform": rotation_transform + base_transform})
+    plot, _ = utils.plot2Ddata(rx_locs, valuesxy, nx=1000, ny=1000, ax=axes[0], ncontour=20, clim=[vmin, vmax], contourOpts={"cmap": "gist_rainbow_r"})
+    plot, _ = utils.plot2Ddata(rx_locs, valuesyx, ax=axes[1], nx=1000, ny=1000, ncontour=20, clim=[vmin, vmax], contourOpts={"cmap": "gist_rainbow_r"})
 
     axes[0].set_xlabel('Northing (m)')
     axes[0].set_ylabel('Easting (m)')
@@ -371,12 +359,8 @@ for j in plot_freqs_ind:
     axes[1].set_xlim(x_min, x_max)
     axes[1].set_ylim(y_min, y_max)
 
-    base_transform = axes[0].transData
-    rotation_transform = transforms.Affine2D().rotate_deg(90)
-    plot, _ = utils.plot2Ddata(rx_locs, valuesxy, nx=1000, ny=1000, ax=axes[0], ncontour=20, clim=[vmin, vmax], contourOpts={"cmap": "bwr", "transform": rotation_transform + base_transform})
-    base_transform = axes[1].transData
-    rotation_transform = transforms.Affine2D().rotate_deg(90)
-    plot, _ = utils.plot2Ddata(rx_locs, valuesyx, ax=axes[1], nx=1000, ny=1000, ncontour=20, clim=[vmin, vmax], contourOpts={"cmap": "bwr", "transform": rotation_transform + base_transform})
+    plot, _ = utils.plot2Ddata(rx_locs, valuesxy, nx=1000, ny=1000, ax=axes[0], ncontour=20, clim=[vmin, vmax], contourOpts={"cmap": "bwr"})
+    plot, _ = utils.plot2Ddata(rx_locs, valuesyx, ax=axes[1], nx=1000, ny=1000, ncontour=20, clim=[vmin, vmax], contourOpts={"cmap": "bwr"})
 
     axes[0].set_xlabel('Northing (m)')
     axes[0].set_ylabel('Easting (m)')
@@ -422,12 +406,8 @@ for j in plot_freqs_ind:
     axes[1].set_xlim(x_min, x_max)
     axes[1].set_ylim(y_min, y_max)
 
-    base_transform = axes[0].transData
-    rotation_transform = transforms.Affine2D().rotate_deg(90)
-    plot, _ = utils.plot2Ddata(rx_locs, valuesxy, nx=1000, ny=1000, ax=axes[0], ncontour=20, clim=[vmin, vmax], contourOpts={"cmap": "bwr", "transform": rotation_transform + base_transform})
-    base_transform = axes[1].transData
-    rotation_transform = transforms.Affine2D().rotate_deg(90)
-    plot, _ = utils.plot2Ddata(rx_locs, valuesyx, ax=axes[1], nx=1000, ny=1000, ncontour=20, clim=[vmin, vmax], contourOpts={"cmap": "bwr", "transform": rotation_transform + base_transform})
+    plot, _ = utils.plot2Ddata(rx_locs, valuesxy, nx=1000, ny=1000, ax=axes[0], ncontour=20, clim=[vmin, vmax], contourOpts={"cmap": "bwr"})
+    plot, _ = utils.plot2Ddata(rx_locs, valuesyx, ax=axes[1], nx=1000, ny=1000, ncontour=20, clim=[vmin, vmax], contourOpts={"cmap": "bwr"})
 
     axes[0].set_xlabel('Northing (m)')
     axes[0].set_ylabel('Easting (m)')
@@ -473,12 +453,8 @@ for j in plot_freqs_ind:
     axes[1].set_xlim(x_min, x_max)
     axes[1].set_ylim(y_min, y_max)
 
-    base_transform = axes[0].transData
-    rotation_transform = transforms.Affine2D().rotate_deg(90)
-    plot, _ = utils.plot2Ddata(rx_locs, valuesxy, nx=1000, ny=1000, ax=axes[0], ncontour=20, clim=[vmin, vmax], contourOpts={"cmap": "bwr", "transform": rotation_transform + base_transform})
-    base_transform = axes[1].transData
-    rotation_transform = transforms.Affine2D().rotate_deg(90)
-    plot, _ = utils.plot2Ddata(rx_locs, valuesyx, ax=axes[1], nx=1000, ny=1000, ncontour=20, clim=[vmin, vmax], contourOpts={"cmap": "bwr", "transform": rotation_transform + base_transform})
+    plot, _ = utils.plot2Ddata(rx_locs, valuesxy, nx=1000, ny=1000, ax=axes[0], ncontour=20, clim=[vmin, vmax], contourOpts={"cmap": "bwr"})
+    plot, _ = utils.plot2Ddata(rx_locs, valuesyx, ax=axes[1], nx=1000, ny=1000, ncontour=20, clim=[vmin, vmax], contourOpts={"cmap": "bwr"})
 
     axes[0].set_xlabel('Northing (m)')
     axes[0].set_ylabel('Easting (m)')
