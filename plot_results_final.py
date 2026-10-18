@@ -12,10 +12,10 @@ mu0 = scipy.constants.mu_0
 
 run_num = "013"
 data_path = f"simPEG_data/{run_num}/"
-analytic_path = "analytic_data/"
+analytic_path = "analytic_data/pub_analytic_data/"
 
 # load and parse analytic data
-Adata = np.zeros([71, 45, 45, 20])
+Adata = np.zeros([24, 15, 15, 20])
 
 appresA = np.load(analytic_path+'appres.npy')
 impA = np.load(analytic_path+'imp.npy')
@@ -85,15 +85,7 @@ n_profiles = 15        # number of profiles (lines)
 n_per_profile = 15     # receivers per profile
 spacing = 250.0        # m, both along-profile and between profiles
 
-x_simpeg = (np.arange(n_per_profile) - (n_per_profile - 1) / 2) * spacing
-
-x_analytic = [
-        -5000, -2000, -1500, -1000, -750, -500, -400, -300, -250, -200,
-        -150, -125, -100, -90, -80, -70, -60, -50, -40, -30,
-        -20, -10, 0, 10, 20, 30, 40, 50, 60, 70,
-        80, 90, 100, 125, 150, 200, 250, 300, 400, 500,
-        750, 1000, 1500, 2000, 5000
-    ] # cut along y=0
+x = (np.arange(n_per_profile) - (n_per_profile - 1) / 2) * spacing
 
 plot_freqs_ind = np.arange(len(freqs))
 
@@ -110,22 +102,23 @@ for j in plot_freqs_ind:
 
     for i, (ax, label) in enumerate(zip(axes, labels)):
         if i % 2 == 0: # Real Impedance plotting
-            ax.plot(x_simpeg, data[j, i, 105:120], '.-', label="Simulated")
-            ax.plot(x_analytic, Adata[j, :, 7, i], '.-', label="Analytic")
+            ax.plot(x, data[j, i, 105:120], '.-', label="Simulated")
+            ax.plot(x, Adata[j, :, 7, i], '.-', label="Analytic")
             ax.set_ylabel('Real Impedance (Ω)')
         else: # Imag Impedance plotting
-            ax.plot(x_simpeg, data[j, i, 105:120], '.-', label="Simulated")
-            ax.plot(x_analytic, Adata[j, :, 7, i], '.-', label="Analytic")
+            ax.plot(x, data[j, i, 105:120], '.-', label="Simulated")
+            ax.plot(x, Adata[j, :, 7, i], '.-', label="Analytic")
             ax.set_ylabel('Imag Impedance (Ω)')
 
         ax.set_title(label)
-        ax.set_xlabel('Easting (m)')
+        ax.set_xlabel('Northing (m)')
         ax.grid(True, which='both', alpha=0.3)
         ax.legend(loc='lower left')
 
     plt.suptitle(f'Impedance along Cut at y=0 for {freqs[j]}Hz')
     plt.tight_layout()
     plt.savefig(f"figure_out/{run_num}/compare{freqs[j]}Hz.png")
+    plt.close()
 
 
 
@@ -139,28 +132,28 @@ for j in plot_freqs_ind:
     fig, axes = plt.subplots(2, 2, figsize=(14, 14), sharex=True)
     axes = axes.flatten()
 
-    axes[0].plot(x_simpeg, np.abs(data[j, 2, 105:120] + data[j, 3, 105:120]*1j)**2 / (mu0 * 2 * np.pi * freqs[j]), '.-', label="Calculated")
-    axes[0].plot(x_simpeg, data[j, 13, 105:120], 'o-', label="Simulated")
-    axes[0].plot(x_analytic, np.abs(Adata[j, :, 7, 2] + Adata[j, :, 7, 3]*1j)**2 / (mu0 * 2 * np.pi * freqs[j]), '.-', label="Analytic")
+    axes[0].plot(x, np.abs(data[j, 2, 105:120] + data[j, 3, 105:120]*1j)**2 / (mu0 * 2 * np.pi * freqs[j]), '.-', label="Calculated")
+    axes[0].plot(x, data[j, 13, 105:120], 'o-', label="Simulated")
+    axes[0].plot(x, np.abs(Adata[j, :, 7, 2] + Adata[j, :, 7, 3]*1j)**2 / (mu0 * 2 * np.pi * freqs[j]), '.-', label="Analytic")
     axes[0].set_title(labels[0])
 
-    axes[1].plot(x_simpeg, np.angle(data[j, 2, 105:120] + data[j, 3, 105:120]*1j, deg=True), '.-', label="Calculated")
-    axes[1].plot(x_simpeg, data[j, 17, 105:120], 'o-', label="Simulated")
-    axes[1].plot(x_analytic, np.angle(Adata[j, :, 7, 2] + Adata[j, :, 7, 3]*1j, deg=True), '.-', label="Analytic")
+    axes[1].plot(x, np.angle(data[j, 2, 105:120] + data[j, 3, 105:120]*1j, deg=True), '.-', label="Calculated")
+    axes[1].plot(x, data[j, 17, 105:120], 'o-', label="Simulated")
+    axes[1].plot(x, np.angle(Adata[j, :, 7, 2] + Adata[j, :, 7, 3]*1j, deg=True), '.-', label="Analytic")
     axes[1].set_title(labels[1])
 
-    axes[2].plot(x_simpeg, np.abs(data[j, 4, 105:120] + data[j, 5, 105:120]*1j)**2 / (mu0 * 2 * np.pi * freqs[j]), '.-', label="Calculated")
-    axes[2].plot(x_simpeg, data[j, 14, 105:120], 'o-', label="Simulated")
-    axes[2].plot(x_analytic, np.abs(Adata[j, :, 7, 4] + Adata[j, :, 7, 5]*1j)**2 / (mu0 * 2 * np.pi * freqs[j]), '.-', label="Analytic")
+    axes[2].plot(x, np.abs(data[j, 4, 105:120] + data[j, 5, 105:120]*1j)**2 / (mu0 * 2 * np.pi * freqs[j]), '.-', label="Calculated")
+    axes[2].plot(x, data[j, 14, 105:120], 'o-', label="Simulated")
+    axes[2].plot(x, np.abs(Adata[j, :, 7, 4] + Adata[j, :, 7, 5]*1j)**2 / (mu0 * 2 * np.pi * freqs[j]), '.-', label="Analytic")
     axes[2].set_title(labels[2])
 
-    axes[3].plot(x_simpeg, np.angle(data[j, 4, 105:120] + data[j, 5, 105:120]*1j, deg=True), '.-', label="Calculated")
-    axes[3].plot(x_simpeg, data[j, 18, 105:120], 'o-', label="Simulated")
-    axes[3].plot(x_analytic, np.angle(Adata[j, :, 7, 4] + Adata[j, :, 7, 5]*1j, deg=True), '.-', label="Analytic")
+    axes[3].plot(x, np.angle(data[j, 4, 105:120] + data[j, 5, 105:120]*1j, deg=True), '.-', label="Calculated")
+    axes[3].plot(x, data[j, 18, 105:120], 'o-', label="Simulated")
+    axes[3].plot(x, np.angle(Adata[j, :, 7, 4] + Adata[j, :, 7, 5]*1j, deg=True), '.-', label="Analytic")
     axes[3].set_title(labels[3])
 
     for ax in axes:
-        ax.set_xlabel('Easting (m)')
+        ax.set_xlabel('Northing (m)')
         ax.grid(True, which='both', alpha=0.3)
         ax.legend(loc='lower left')
         
@@ -168,4 +161,32 @@ for j in plot_freqs_ind:
     plt.suptitle(f'Apparent Resisitivity and Phase along Cut at y=0 for {freqs[j]}Hz')
     plt.tight_layout()
     plt.savefig(f"figure_out/{run_num}/compareRho{freqs[j]}Hz.png")
+    plt.close()
 
+
+# ======================
+# Impedance percent residuals for individual freqs
+# ======================
+
+labels = ['Real Impedance xy', 'Imag Impedance xy', 'Real Impedance yx', 'Imag Impedance yx']
+
+for j in plot_freqs_ind:
+    fig, axes = plt.subplots(2, 2, figsize=(20, 14), sharex=True)
+    axes = axes.flatten()
+
+    for i, (ax, label) in enumerate(zip(axes, labels)):
+        if i % 2 == 0: # Real Impedance plotting
+            ax.plot(x, 100 * (data[j, i+2, 105:120] - Adata[j, :, 7, i+2]) / Adata[j, :, 7, i+2], '.-')
+            ax.set_ylabel('Percent Difference')
+        else: # Imag Impedance plotting
+            ax.plot(x, 100 * (data[j, i+2, 105:120] - Adata[j, :, 7, i+2]) / Adata[j, :, 7, i+2], '.-')
+            ax.set_ylabel('Percent Difference')
+
+        ax.set_title(label)
+        ax.set_xlabel('Northing (m)')
+        ax.grid(True, which='both', alpha=0.3)
+
+    plt.suptitle(f'Impedance Percent Residuals along Cut at y=0 for {freqs[j]}Hz')
+    plt.tight_layout()
+    plt.savefig(f"figure_out/{run_num}/residuals{freqs[j]}Hz.png")
+    plt.close()
