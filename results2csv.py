@@ -3,14 +3,14 @@
 import numpy as np
 import csv
 
-run_num = "013"
+run_num = "halfspace13"
 data_path = f"simPEG_data/{run_num}/"
-csv_file = f"simPEG_data/{run_num}/137_FWrsp.dat"
+csv_file = f"simPEG_data/{run_num}/137_FWrsp_halfspace.dat"
 
 # load and parse simPEG data
-dpred = np.load(data_path+'dpredVA.npy')
-freqs = np.load(data_path+'freqsVA.npy')
-rx_locs = np.load(data_path+'rx_locsVA.npy')
+dpred = np.load(data_path+'dpredHS.npy')
+freqs = np.load(data_path+'freqsHS.npy')
+rx_locs = np.load(data_path+'rx_locsHS.npy')
 
 
 dpred = dpred.reshape(len(freqs), 20, len(rx_locs))
